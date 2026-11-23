@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Numpad30 Studio</title>
+<style>
+:root{--bg:#07090e;--soft:#0b0e15;--panel:rgba(255,255,255,.04);--panel2:rgba(255,255,255,.07);--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.16);--text:#eef2fb;--text2:#c3cbdb;--muted:#7f8aa0;--faint:#5a6478;--accent:#7c5cff;--accent2:#22d3ee;--warn:#ffb86b;--danger:#ff5d7a;--ok:#3ddc97;--r:18px;--card:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));--input:rgba(255,255,255,.05);--mono:"Cascadia Code",ui-monospace,Consolas,monospace;color-scheme:dark}
+html[data-theme=light]{--bg:#f3f5fa;--soft:#fff;--panel:rgba(15,23,42,.03);--panel2:rgba(15,23,42,.06);--line:rgba(15,23,42,.1);--line2:rgba(15,23,42,.2);--text:#0f172a;--text2:#334155;--muted:#64748b;--faint:#94a3b8;--accent:#6d4aff;--accent2:#0891b2;--card:#fff;--input:#f1f5f9;color-scheme:light}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%}
+body{font:14px/1.5 "Segoe UI Variable Display","Segoe UI",Inter,system-ui,sans-serif;color:var(--text);background:radial-gradient(900px 620px at 6% -12%,rgba(124,92,255,.2),transparent 62%),radial-gradient(820px 520px at 102% -4%,rgba(34,211,238,.12),transparent 58%),var(--bg);background-attachment:fixed}
+.app{display:grid;grid-template-columns:238px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;padding:18px 14px;display:flex;flex-direction:column;gap:18px;border-right:1px solid var(--line);background:var(--soft)}
+.brand{display:flex;align-items:center;gap:12px;padding:4px 6px}
+.logo{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font:800 13px var(--mono);color:#fff;background:conic-gradient(from 190deg,#7c5cff,#22d3ee,#b6ff3b,#7c5cff);box-shadow:0 0 28px rgba(124,92,255,.45)}
+.brand b{display:block;font-size:15px;letter-spacing:.6px}.brand b span{color:var(--accent2)}.brand small{display:block;font:600 8.5px var(--mono);letter-spacing:2.2px;color:var(--faint);margin-top:4px}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav button{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid transparent;border-radius:12px;background:none;color:var(--muted);font:inherit;font-weight:600;cursor:pointer;text-align:left}
+.nav button svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.nav button:hover{color:var(--text);background:var(--panel)}
+.nav button.on{color:var(--text);background:linear-gradient(90deg,rgba(124,92,255,.22),rgba(124,92,255,.04));border-color:rgba(124,92,255,.35)}
+.sidefoot{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.conn{border:1px solid var(--line);border-radius:16px;padding:13px;background:var(--panel);display:flex;flex-direction:column;gap:8px}
+.conn.on{border-color:rgba(61,220,151,.35);background:linear-gradient(180deg,rgba(61,220,151,.08),transparent)}
+.conn-top{display:flex;align-items:center;gap:8px}.conn-top b{font-size:12.5px}.dot{width:8px;height:8px;border-radius:50%;background:var(--faint)}.conn.on .dot{background:var(--ok);box-shadow:0 0 12px var(--ok)}
+.conn small{font-size:11px;color:var(--muted)}.conn .btn{width:100%;justify-content:center}.conn #dc{display:none}.conn.on #dc{display:flex}.conn.on #bc{display:none}
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;gap:10px;padding:16px 28px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px)}
+.tt{flex:1;min-width:0}.tt h1{margin:0;font-size:18px}.tt p{margin:0;color:var(--muted);font-size:12px}
+.pill{font:600 10.5px var(--mono);letter-spacing:.4px;padding:7px 10px;border-radius:99px;border:1px solid var(--line2);color:var(--muted);white-space:nowrap}
+.pill.pend{color:var(--warn);border-color:rgba(255,184,107,.35)}.pill.ok{color:var(--ok);border-color:rgba(61,220,151,.35)}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:10px;border:1px solid var(--line2);background:var(--panel);color:var(--text2);font:inherit;font-weight:600;font-size:12.5px;cursor:pointer;transition:.15s}
+.btn:hover{background:var(--panel2);color:var(--text)}.btn:disabled{opacity:.38;cursor:not-allowed}
+.btn.primary{background:linear-gradient(135deg,#7c5cff,#5b7cff 55%,#22d3ee);border-color:transparent;color:#fff;box-shadow:0 10px 28px -12px rgba(124,92,255,.9)}
+.btn.danger{color:var(--danger);border-color:rgba(255,93,122,.3)}.btn.sm{padding:6px 10px;font-size:11.5px;border-radius:8px}.btn.icon{width:34px;height:34px;padding:0;justify-content:center}.btn.rec{background:var(--danger);color:#fff;border-color:transparent}
+.btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.content{width:100%;max-width:1180px;margin:0 auto;padding:24px 28px 80px}
+.view{display:none}.view.on{display:block;animation:up .3s ease both}@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card{border:1px solid var(--line);border-radius:var(--r);background:var(--card);overflow:hidden;margin-bottom:18px}
+.hd{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}.hd h2{margin:0;font-size:13px;font-weight:700}.hd .sub{margin-left:auto;font-size:11px;color:var(--muted)}
+.bd{padding:18px}.hint{color:var(--muted);font-size:12.5px;margin:10px 0 0}
+.layerbar{padding:14px 18px}.layers{display:flex;gap:7px;overflow-x:auto;padding-bottom:8px}
+.chip{display:flex;align-items:center;gap:8px;padding:8px 13px;border-radius:11px;border:1px solid var(--line);background:var(--panel);color:var(--text2);font:inherit;font-weight:650;cursor:pointer;white-space:nowrap}
+.chip i{width:8px;height:8px;border-radius:3px;background:var(--c);box-shadow:0 0 10px var(--c)}.chip small{font:600 9px var(--mono);color:var(--faint)}
+.chip.on{border-color:var(--c);background:var(--panel2);color:var(--text)}
+.lbfoot{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}.lbfoot span{font-size:12px;color:var(--muted)}.sp{flex:1}
+.devwrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}@media(max-width:1000px){.devwrap{grid-template-columns:1fr}}
+.device{border:1px solid var(--line);border-radius:26px;padding:20px;background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015));box-shadow:0 24px 60px -24px rgba(0,0,0,.6)}
+.oled{height:58px;margin:0 auto 16px;width:210px;border-radius:8px;background:#02060a;border:1px solid #1c2a36;padding:7px 10px;font-family:var(--mono);color:#7ee8ff;line-height:1.1;box-shadow:inset 0 0 18px rgba(34,211,238,.12)}
+.oled small{display:block;font-size:8px;opacity:.7;letter-spacing:1px}.oled b{font-size:21px;letter-spacing:1px}
+.keys{display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(5,66px);gap:9px;min-width:430px}
+.scroll{overflow-x:auto}
+.key{position:relative;border:1px solid var(--line2);border-bottom-width:3px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));color:var(--text);font:600 12px/1.2 inherit;cursor:pointer;padding:6px 4px;word-break:break-word;transition:.12s}
+.key::before{content:"";position:absolute;top:6px;left:7px;width:6px;height:6px;border-radius:50%;background:var(--c,var(--faint));box-shadow:0 0 8px var(--c,transparent)}
+.key:hover{border-color:var(--accent2);transform:translateY(-1px)}.key.sel{outline:2px solid var(--accent);background:rgba(124,92,255,.18)}
+.key small{display:block;font:500 9px var(--mono);color:var(--faint);margin-top:2px}.key.dis{opacity:.28;border-style:dashed;cursor:not-allowed}.key.lock{border-color:var(--warn)}
+.key.c-none{color:var(--faint)}.c-key{--c:#7f8aa0}.c-media{--c:#22d3ee}.c-macro{--c:#a78bfa}.c-mouse{--c:#b6ff3b}.c-layer{--c:#ffb86b}.c-music{--c:#ff7ab6}.c-sys{--c:#ff5d7a}
+label.l{display:block;font-size:11px;color:var(--muted);margin:14px 0 5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+select,input[type=number],input[type=text]{width:100%;padding:8px 10px;border-radius:9px;border:1px solid var(--line2);background:var(--input);color:var(--text);font:inherit}
+select option{background:var(--soft);color:var(--text)}input[type=range]{width:100%;accent-color:var(--accent)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chips label{display:flex;gap:6px;align-items:center;padding:6px 11px;border:1px solid var(--line2);border-radius:9px;cursor:pointer;font-size:13px}
+.seg{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:3px;margin-bottom:16px;flex-wrap:wrap}
+.seg button{border:0;background:none;padding:7px 15px;border-radius:8px;font:inherit;font-weight:600;color:var(--muted);cursor:pointer}.seg button.on{background:var(--panel2);color:var(--text)}
+.ml{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}.ml button{padding:6px 12px;border:1px solid var(--line);background:var(--panel);color:var(--text2);border-radius:8px;cursor:pointer;font:inherit}.ml button.on{border-color:var(--accent);color:var(--text);background:rgba(124,92,255,.18)}
+.step{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;padding:9px;border:1px solid var(--line);border-radius:11px;background:var(--panel)}
+.step select{width:auto}.step input[type=number]{width:100px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}@media(max-width:820px){.three,.two{grid-template-columns:1fr}}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}@media(max-width:1000px){.cols{grid-template-columns:1fr}}
+dl{display:grid;grid-template-columns:140px 1fr;gap:8px 12px;margin:0}dt{color:var(--muted)}dd{margin:0}
+details{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px;background:var(--panel)}summary{cursor:pointer;font-weight:650}details p,details li{color:var(--text2);font-size:13px}
+kbd{font:600 11px var(--mono);padding:2px 6px;border-radius:5px;border:1px solid var(--line2);background:var(--panel2)}
+.key.hit{background:rgba(61,220,151,.32);border-color:var(--ok)}
+.key.tgt{outline:2px solid var(--accent2);background:rgba(34,211,238,.25);animation:pulse .5s infinite alternate}@keyframes pulse{to{box-shadow:0 0 18px var(--accent2)}}
+.key.ok{background:rgba(61,220,151,.45)}.key.bad{background:rgba(255,93,122,.45)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1b2030;color:#fff;border:1px solid var(--line2);padding:10px 18px;border-radius:12px;z-index:20;display:none;font-size:13px}
+.warnbox{background:rgba(255,184,107,.1);border:1px solid rgba(255,184,107,.35);color:var(--warn);padding:10px 14px;border-radius:12px;margin-bottom:16px;display:none}
+@media(max-width:900px){.app{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center}.nav{flex-direction:row;overflow-x:auto;width:100%;order:3}.nav button span{display:none}.sidefoot{margin:0 0 0 auto;flex-direction:row}.conn{padding:8px}.content{padding:16px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="side">
+  <div class="brand"><div class="logo">30</div><div><b>NUM<span>30</span></b><small>RP2350 STUDIO</small></div></div>
+  <nav class="nav" id="nav"></nav>
+  <div class="sidefoot">
+    <div class="conn" id="connCard"><div class="conn-top"><i class="dot"></i><b id="connTitle">Chưa kết nối</b></div><small id="connSub">Sửa offline vẫn được</small>
+      <button class="btn primary sm" id="bc">Kết nối</button><button class="btn sm" id="dc">Ngắt kết nối</button></div>
+  </div>
+</aside>
+<main class="main">
+  <header class="topbar">
+    <div class="tt"><h1 id="vt">Bàn phím</h1><p id="vs"></p></div>
+    <span class="pill" id="sv" hidden></span>
+    <button class="btn icon" id="undo" title="Hoàn tác (Ctrl+Z)"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+    <button class="btn icon" id="redo" title="Làm lại (Ctrl+Y)"><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+    <button class="btn primary" id="saveBtn" title="Lưu ngay vào flash (Ctrl+S)"><svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Lưu ngay</button>
+    <button class="btn icon" id="theme" title="Đổi giao diện sáng/tối">◐</button>
+  </header>
+  <div class="content">
+  <div class="warnbox" id="nohid">Trình duyệt không hỗ trợ WebHID. Hãy dùng Chrome hoặc Edge trên máy tính.</div>
+
+  <section class="view on" id="view-keymap">
+    <div class="card layerbar"><div class="layers" id="layers"></div>
+      <div class="lbfoot"><button class="btn sm" id="addL">+ Layer</button><button class="btn sm" id="renL">Đổi tên</button><button class="btn sm danger" id="delL">Xóa layer</button><button class="btn sm" id="testBtn">Chế độ thử: tắt</button><span id="lcount"></span><span class="sp"></span><span>Thay đổi áp dụng ngay và tự lưu vào flash</span></div></div>
+    <div class="devwrap">
+      <div class="device"><div class="oled" id="oled"></div><div class="scroll"><div class="keys" id="g1"></div></div>
+        <p class="hint" style="text-align:center">30 phím · ma trận 5×7 · 2U: + · Enter · 0 · khung vàng: phím Num</p></div>
+      <div>
+        <div class="card"><div class="hd"><h2>Phím đang chọn</h2><span class="sub" id="selPos"></span></div><div class="bd" id="ins"></div></div>
+        <div class="card"><div class="hd"><h2>Layer hiện tại</h2><span class="sub" id="lstat"></span></div><div class="bd" id="linfo"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="view-macro"><div class="card"><div class="hd"><h2>Macro</h2><span class="sub">16 macro × 12 bước</span></div><div class="bd">
+    <p class="hint" style="margin:0 0 14px">Gán macro cho phím bằng chức năng "Chạy macro". "Nhấn + nhả" gửi một phím, "Giữ xuống/Nhả" cho thao tác kéo dài, "Chờ" tính bằng mili giây.</p>
+    <div class="ml" id="mlist"></div><div id="msteps"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"><button class="btn" id="madd">+ Thêm bước</button><button class="btn" id="mrec">● Ghi từ bàn phím</button><button class="btn danger" id="mclr">Xóa macro</button></div></div></div></section>
+
+  <section class="view" id="view-music"><div class="cols">
+    <div class="card"><div class="hd"><h2>Bảng nhạc cụ</h2><span class="sub">giữ Num + Enter để vào lớp nhạc cụ</span></div><div class="bd">
+      <div class="seg" id="bseg"></div><div class="scroll"><div class="keys" id="g2"></div></div>
+      <p class="hint">Piano: mỗi phím một nốt. Trống: mỗi phím một tiếng. Guitar: hàng = dây e, B, G, D, A; cột = phím đàn 0 đến 6. ✓ là bảng đang dùng; giữ Num rồi bấm Esc để chuyển bảng. Bấm phím để nghe thử trên máy tính.</p></div></div>
+    <div><div class="card"><div class="hd"><h2>Phím đang chọn</h2></div><div class="bd" id="mins"></div></div>
+      <div class="card"><div class="hd"><h2>USB-MIDI</h2><span class="sub">dùng như cây đàn điều khiển</span></div><div class="bd">
+        <div class="chips"><label><input type="checkbox" id="mo"><span>Gửi MIDI khi ở lớp nhạc cụ</span></label><label><input type="checkbox" id="ml"><span>Vẫn phát tiếng trên loa</span></label></div>
+        <div class="two"><div><label class="l">Kênh MIDI</label><select id="mc"></select></div><div><label class="l">Dịch quãng (bán cung)</label><input type="number" id="mt" min="-36" max="36"></div></div>
+        <label class="l">Độ mạnh (velocity): <span id="mvv"></span></label><input type="range" id="mv" min="1" max="127">
+        <p class="hint">Bàn phím xuất hiện trong phần mềm âm nhạc (DAW) như thiết bị MIDI "Numpad30". Bảng trống gửi theo chuẩn General MIDI (kênh 10). Nốt MIDI từ máy tính gửi vào cũng phát ra loa bàn phím. Nếu máy tính chưa nhận thiết bị, bàn phím vẫn phát tiếng bình thường.</p></div></div>
+      <div class="card"><div class="hd"><h2>Âm lượng loa</h2><span class="sub" id="vv"></span></div><div class="bd"><input type="range" id="vol" min="0" max="100"></div></div></div>
+  </div></section>
+
+  <section class="view" id="view-practice">
+    <div class="card"><div class="hd"><h2>Bài tập</h2><span class="sub" id="pinfo">Chưa chọn bài</span></div><div class="bd">
+      <div class="two"><div><label class="l" style="margin-top:0">Bài có sẵn</label><select id="psong"></select></div>
+        <div><label class="l" style="margin-top:0">Hoặc mở file MIDI</label><button class="btn" id="pmid">Mở file .mid…</button><input type="file" id="pfile" accept=".mid,.midi" hidden></div></div>
+      <div id="ptrk" style="display:none"><label class="l">Track (bè) để tập</label><select id="ptsel"></select></div>
+      <div class="two"><div><label class="l">Tốc độ: <span id="ptv">100%</span></label><input type="range" id="ptempo" min="25" max="150" value="100"></div>
+        <div><label class="l">Chế độ</label><div class="seg" id="pmode" style="margin:0"><button class="on" data-m="0">Nghe mẫu</button><button data-m="1">Chờ phím</button><button data-m="2">Theo nhịp</button></div></div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px"><button class="btn primary" id="pgo">▶ Bắt đầu</button><button class="btn" id="pset">Gán nốt vào bàn phím</button></div>
+      <p class="hint"><b>Nghe mẫu</b>: app phát bài và chỉ phím. <b>Chờ phím</b>: bài đứng yên cho đến khi bạn bấm đúng phím sáng. <b>Theo nhịp</b>: nốt rơi đúng nhịp, bấm trong khoảng ±0,3 giây để ghi điểm.</p></div></div>
+    <div class="card"><div class="hd"><h2>Bài lưu trong bàn phím</h2><span class="sub">phát không cần máy tính</span></div><div class="bd">
+      <div id="slots"></div>
+      <div class="two"><div><label class="l">Tốc độ phát: <span id="stv"></span>%</label><input type="range" id="stp" min="25" max="200"></div><div><label class="l">Tùy chọn</label><div class="chips"><label><input type="checkbox" id="sloop"><span>Lặp lại</span></label></div></div></div>
+      <p class="hint">Chọn bài ở trên rồi bấm "Tải bài hiện tại vào ô". Bài được chuyển thành dữ liệu gọn (tối đa 1018 nốt) và lưu vào flash. Phát bằng nút ở đây hoặc gán phím "Phát bài MIDI" ở tab Bàn phím; OLED hiện tên bài đang phát. Tiếng phát theo bảng nhạc cụ đang dùng (Guitar thì gảy dây, còn lại là Piano).</p></div></div>
+    <div class="card"><div class="hd"><h2>Nốt rơi</h2><span class="sub" id="pscore"></span></div><div class="bd"><canvas id="pcv" width="900" height="300" style="width:100%;border-radius:12px"></canvas></div></div>
+    <div class="card"><div class="hd"><h2>Bàn phím</h2><span class="sub">phím sáng xanh là phím cần bấm</span></div><div class="bd"><div class="scroll"><div class="keys" id="g3"></div></div>
+      <p class="hint">Để tập trên bàn phím thật: bấm "Gán nốt vào bàn phím" (bảng Piano sẽ được đặt đúng các nốt của bài), kết nối bàn phím, giữ Num + Enter để vào lớp nhạc cụ rồi bấm phím sáng. App nhận phím qua chế độ thử. Có thể bấm trực tiếp phím trên màn hình để tập. "Về mẫu gốc" ở tab Nhạc cụ khôi phục bảng Piano.</p></div></div>
+  </section>
+
+  <section class="view" id="view-game">
+    <div class="card"><div class="hd"><h2>Tetris trên OLED</h2><span class="sub" id="hsv"></span></div><div class="bd">
+      <p class="hint" style="margin:0 0 14px">Chơi Tetris ngay trên màn OLED của bàn phím: bàn 10×20, khối kế tiếp, giữ khối (HOLD), bóng chỉ chỗ rơi, tính điểm và cấp độ, nhạc nền Korobeiniki cùng hiệu ứng âm thanh qua loa.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn primary" id="gassign">Gán "Chơi Tetris" vào layer FN (Num + Ctrl+C)</button><button class="btn danger" id="hsrst">Xóa điểm cao</button></div>
+      <div class="chips" style="margin-top:14px"><label><input type="checkbox" id="gmusic"><span>Nhạc nền</span></label></div></div></div>
+    <div class="card"><div class="hd"><h2>Phím điều khiển</h2><span class="sub">áp dụng khi đang chơi</span></div><div class="bd"><div class="scroll"><div class="keys" id="g4"></div></div>
+      <p class="hint">Bắt đầu: giữ Num rồi bấm phím "Chơi Tetris" (mặc định là phím Ctrl+C ở layer FN); làm lại như vậy để thoát. Chơi được cả hai tay: cụm mũi tên bên trái (← ↓ → và Esc để xoay) hoặc cụm số bên phải (4 6 là trái phải, 5 là xuống, 8 hoặc 9 xoay, 7 xoay ngược). Phím 0 hoặc Enter thả nhanh, phím "." hoặc Ctrl+S giữ khối, Del tạm dừng. Khi thua, bấm 0 để chơi lại.</p></div></div>
+    <div class="card"><div class="hd"><h2>Cách tính điểm</h2></div><div class="bd"><dl><dt>Xóa 1 / 2 / 3 / 4 hàng</dt><dd>100 / 300 / 500 / 800 điểm × cấp</dd><dt>Thả nhẹ</dt><dd>1 điểm mỗi ô</dd><dt>Thả nhanh</dt><dd>2 điểm mỗi ô</dd><dt>Lên cấp</dt><dd>mỗi 10 hàng, khối rơi nhanh hơn</dd></dl></div></div>
+  </section>
+
+  <section class="view" id="view-adv">
+    <div class="card"><div class="hd"><h2>Tap Dance</h2><span class="sub">Chạm · Giữ · Chạm 2 lần</span></div><div class="bd">
+      <p class="hint" style="margin:0 0 6px">Gán "Tap Dance n" cho phím ở tab Bàn phím.</p>
+      <label class="l">Ngưỡng thời gian (ms)</label><input type="number" id="term" min="80" max="600" step="10" style="width:120px"><div id="tds" style="margin-top:16px"></div></div></div>
+    <div class="card"><div class="hd"><h2>Sequence</h2><span class="sub">mỗi lần bấm chạy một bước, rồi quay vòng</span></div><div class="bd"><p class="hint" style="margin:0 0 12px">Gán "Sequence n" cho phím ở tab Bàn phím. Các bước chạy lần lượt cho tới bước trống đầu tiên.</p><div id="seqs"></div></div></div>
+    <div class="card"><div class="hd"><h2>Combo</h2><span class="sub">Hai phím trong 40 ms · chỉ ở layer nền</span></div><div class="bd"><div id="cmb"></div></div></div>
+  </section>
+
+  <section class="view" id="view-screen"><div class="cols">
+    <div>
+      <div class="card"><div class="hd"><h2>Màn hình OLED</h2><span class="sub">SSD1306 128×64</span></div><div class="bd">
+        <label class="l">Độ sáng</label><input type="range" id="bri" min="0" max="255">
+        <label class="l">Khi nhàn rỗi</label><select id="ssk" style="max-width:240px"><option value="0">Tắt màn hình</option><option value="1">Logo chạy nảy</option><option value="2">Sao bay</option></select><label class="l">Sau thời gian</label><select id="slp" style="max-width:240px"><option value="0">Không bao giờ</option><option value="1">1 phút</option><option value="2">2 phút</option><option value="5">5 phút</option><option value="10">10 phút</option><option value="30">30 phút</option></select>
+        <label class="l">Tùy chọn</label><div class="chips"><label><input type="checkbox" id="flp"><span>Xoay màn hình 180°</span></label><label><input type="checkbox" id="spl"><span>Logo khi khởi động</span></label></div></div></div>
+      <div class="card"><div class="hd"><h2>Hẹn giờ báo</h2><span class="sub">báo bằng loa</span></div><div class="bd"><label class="l" style="margin-top:0">Thời gian đếm ngược (phút)</label><input type="number" id="tmr" min="1" max="999" style="width:120px"><p class="hint">Gán phím "Hẹn giờ" ở tab Bàn phím: bấm để bắt đầu, bấm lại để dừng. Hết giờ loa kêu và OLED báo; bấm phím bất kỳ để tắt.</p></div></div>
+      <div class="card"><div class="hd"><h2>Lời chào khi cắm USB</h2><span class="sub">chữ chạy từ phải sang trái</span></div><div class="bd">
+        <label class="l" style="margin-top:0">Nội dung (tối đa 23 ký tự, A-Z 0-9)</label><input type="text" id="grt" maxlength="23">
+        <div class="chips" style="margin-top:10px"><label><input type="checkbox" id="gon"><span>Hiện lời chào</span></label></div></div></div>
+    </div>
+    <div class="card"><div class="hd"><h2>Xem trước</h2></div><div class="bd"><div class="oled" id="oled2" style="width:100%"></div><p class="hint">OLED chỉ vẽ được A-Z, 0-9 và vài dấu; app tự bỏ dấu tiếng Việt.</p></div></div>
+  </div></section>
+
+  <section class="view" id="view-air"><div class="card"><div class="hd"><h2>Chuột bay</h2><span class="sub">gyro MPU-6515</span></div><div class="bd">
+    <p class="hint" style="margin:0 0 6px">Nghiêng hoặc xoay bàn phím để di chuyển con trỏ. Gán "Chuột bay" và "Nút chuột" cho phím ở tab Bàn phím. Mặc định ở layer FN: 0 = bật/tắt, ↓ = chuột trái, → = chuột phải. Giữ yên bàn phím lúc cắm USB để gyro hiệu chuẩn.</p>
+    <div class="two"><div><label class="l">Độ nhạy ngang: <span id="axv"></span></label><input type="range" id="ax" min="0" max="255"></div><div><label class="l">Độ nhạy dọc: <span id="ayv"></span></label><input type="range" id="ay" min="0" max="255"></div>
+    <div><label class="l">Vùng chết: <span id="adv"></span></label><input type="range" id="ad" min="0" max="100"></div><div><label class="l">Làm mượt: <span id="asv"></span></label><input type="range" id="as" min="0" max="9"></div></div>
+    <label class="l">Tùy chọn</label><div class="chips"><label><input type="checkbox" id="af0"><span>Đảo trục ngang</span></label><label><input type="checkbox" id="af1"><span>Đảo trục dọc</span></label><label><input type="checkbox" id="af2"><span>Trục dọc theo gy</span></label><label><input type="checkbox" id="af3"><span>Luôn bay</span></label></div></div></div></section>
+
+  <section class="view" id="view-tools">
+    <div class="card"><div class="hd"><h2>Hồ sơ cấu hình</h2><span class="sub">JSON · sao lưu và chia sẻ</span></div><div class="bd">
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn primary" id="ex">Xuất JSON</button><button class="btn" id="im">Nhập JSON…</button><input type="file" id="fi" accept=".json" hidden></div>
+      <p class="hint">Hồ sơ gồm toàn bộ layer, macro, Tap Dance, Combo, nốt nhạc và cài đặt màn hình, chuột bay.</p></div></div>
+    <div class="card"><div class="hd"><h2>Thiết bị</h2><span class="sub" id="d1">Chưa kết nối</span></div><div class="bd">
+      <dl><dt>VID:PID</dt><dd>CAFE:4030</dd><dt>Giao thức</dt><dd>HID thô 32 byte</dd><dt>Vị trí lưu</dt><dd>Sector cuối của flash 2 MB</dd></dl>
+      <div style="margin-top:14px"><button class="btn danger" id="rs">Khôi phục mặc định</button></div></div></div>
+    <div class="card"><div class="hd"><h2>Phím tắt</h2></div><div class="bd"><p style="margin:0"><kbd>Ctrl</kbd>+<kbd>Z</kbd> hoàn tác · <kbd>Ctrl</kbd>+<kbd>Y</kbd> làm lại · <kbd>Ctrl</kbd>+<kbd>S</kbd> lưu ngay vào flash</p></div></div>
+  </section>
+
+  <section class="view" id="view-help"><div class="card"><div class="hd"><h2>Hướng dẫn sử dụng</h2></div><div class="bd">
+    <details open><summary>Bắt đầu</summary><p>Bấm "Kết nối", chọn Numpad30. App đọc toàn bộ cấu hình từ bàn phím. Mọi thay đổi áp dụng ngay và tự lưu vào flash sau khoảng 1,5 giây (hoặc bấm "Lưu ngay").</p></details>
+    <details><summary>Layer</summary><p>Có tối đa 8 layer. Giữ phím Num = vào layer FN (bấm nhanh = NumLock); bạn chọn layer mà Num giữ ở ô chọn phím Num. Dùng "Giữ để chuyển layer" (MO), "Bật/tắt layer" (TG) hoặc "Chuyển hẳn sang layer" (TO) cho các phím khác. Phím "Dùng phím layer dưới" (▽) cho phép layer cao hơn lấy phím từ layer thấp hơn.</p></details>
+    <details><summary>Macro, Tap Dance, Combo</summary><p>Macro chạy một chuỗi phím khi bấm. Tap Dance cho một phím ba hành động (chạm, giữ, chạm hai lần). Combo biến việc bấm đồng thời hai phím thành một hành động. Gán chúng cho phím ở tab Bàn phím.</p></details>
+    <details><summary>Layer-Tap, Sequence, Hẹn giờ, Chế độ thử</summary><p>Layer-Tap: chạm ra một phím, giữ để vào layer. Sequence: mỗi lần bấm chạy một bước theo thứ tự rồi quay vòng. Hẹn giờ: bấm để đếm ngược, hết giờ loa báo; bấm phím bất kỳ để tắt. "Chế độ thử" (tab Bàn phím) làm phím sáng lên khi bạn bấm trên bàn phím thật.</p></details>
+    <details><summary>Tập nhạc với bài MIDI</summary><p>Vào tab Tập nhạc, chọn bài có sẵn hoặc mở file .mid. App xếp các nốt của bài lên các phím và chỉ phím cần bấm. Bấm "Gán nốt vào bàn phím" để bàn phím phát đúng các nốt đó khi ở lớp nhạc cụ.</p></details>
+    <details><summary>USB-MIDI và bài lưu trong bàn phím</summary><p>Khi ở lớp nhạc cụ, bàn phím gửi nốt USB-MIDI tới phần mềm âm nhạc; bạn chọn kênh, dịch quãng và độ mạnh ở tab Nhạc cụ. Ở tab Tập nhạc, bấm "Tải bài hiện tại vào ô" để lưu bài vào flash của bàn phím (4 ô), sau đó phát ngay trên bàn phím hoặc gán phím "Phát bài MIDI".</p></details>
+    <details><summary>Tetris trên OLED</summary><p>Vào tab Trò chơi, bấm "Gán Chơi Tetris vào layer FN", rồi giữ Num và bấm phím Ctrl+C để vào game; làm lại để thoát. Khi đang chơi, các phím không còn gõ chữ mà trở thành phím điều khiển game.</p></details>
+    <details><summary>Lớp nhạc cụ</summary><p>Giữ Num + Enter để vào. Ba bảng: Piano, Trống, Guitar. Giữ Num + Esc để đổi bảng.</p></details>
+    <details><summary>Chuột bay</summary><p>Bật bằng phím gán "Chuột bay". Nếu con trỏ đi ngược hoặc nhầm trục, dùng các tùy chọn đảo trục.</p></details>
+    <details><summary>Nạp firmware</summary><p>Giữ Num rồi bấm phím "." để vào chế độ BOOTSEL, hoặc giữ nút BOOT trên bo khi cắm USB.</p></details>
+  </div></div></section>
+  </div>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],NR=5,NC=7,NL=8,XS=1104,A=()=>({t:0,mod:0,code:0});
+const N={};for(let i=0;i<26;i++)N[4+i]=String.fromCharCode(65+i);
+"1234567890".split('').forEach((c,i)=>N[30+i]=c);
+Object.assign(N,{40:'Enter',41:'Esc',42:'Bksp',43:'Tab',44:'Space',45:'-',46:'=',47:'[',48:']',49:'\\',51:';',52:"'",53:'`',54:',',55:'.',56:'/',70:'PrtSc',71:'ScrLk',72:'Pause',73:'Ins',74:'Home',75:'PgUp',76:'Del',77:'End',78:'PgDn',79:'→',80:'←',81:'↓',82:'↑',83:'NumLk',84:'KP /',85:'KP *',86:'KP -',87:'KP +',88:'KP Enter',98:'KP 0',99:'KP .'});
+for(let i=1;i<=12;i++)N[57+i]='F'+i;for(let i=1;i<=9;i++)N[88+i]='KP '+i;
+const CC={0xE2:'Tắt tiếng',0xEA:'Vol −',0xE9:'Vol +',0xCD:'Play/Pause',0xB5:'Bài sau',0xB6:'Bài trước'};
+const MB={1:'Chuột trái',2:'Chuột phải',4:'Chuột giữa'};
+const MODS=[['Ctrl',1],['Shift',2],['Alt',4],['Win',8]];
+const TYPES=[[0,'Không làm gì'],[1,'Dùng phím layer dưới (▽)'],[2,'Phím / tổ hợp phím'],[3,'Điều khiển media'],[14,'Giữ để chuyển layer (MO)'],[15,'Bật/tắt layer (TG)'],[16,'Chuyển hẳn sang layer (TO)'],[17,'Layer-Tap (chạm = phím, giữ = layer)'],[18,'Sequence (mỗi lần bấm một bước)'],[19,'Hẹn giờ (bắt đầu / dừng)'],[20,'Phát bài MIDI trong bàn phím (bắt đầu / dừng)'],[21,'Chơi Tetris (bật / tắt)'],[8,'Chạy macro'],[9,'Tap Dance'],[11,'Chuột bay: bật/tắt'],[12,'Chuột bay: giữ để bay'],[13,'Nút chuột'],[5,'Bật/tắt lớp nhạc cụ'],[10,'Đổi bảng nhạc'],[6,'Chế độ nạp firmware']];
+const ALLB=[0,2,3,14,15,16,17,18,19,20,21,8,9,11,12,13,5,10,6],ALLH=[1,...ALLB],SIMPLE=[0,2,3];
+const OPS=[[1,'Nhấn + nhả'],[2,'Giữ xuống'],[3,'Nhả'],[4,'Chờ']];
+const HIDE={'2,6':1,'4,4':1,'4,6':1},SPAN={'1,6':'row','3,6':'row','4,3':'col'},DIS={'3,0':1,'3,2':1};
+const DRUMS=['(không phát)','Kick','Snare','Hi-hat đóng','Hi-hat mở','Tom cao','Tom giữa','Tom thấp','Crash','Ride','Clap','Rim','Cowbell'],BN=['Piano','Trống điện tử','Guitar'];
+const DRUM_DEF=[10,11,12,0,9,8,4,5,6,7,3,3,4,8,1,2,1,5,6,7,0,0,1,0,1,2,3,8,1,2,1,1,0,3,0];
+const midiHz=n=>Math.round(440*2**((n-69)/12));
+const presetBoard=b=>Array.from({length:35},(_,k)=>b==0?midiHz(60+k):b==1?DRUM_DEF[k]:midiHz([64,59,55,50,45][(k/7)|0]+k%7));
+const m=Array.from({length:NL},()=>Array.from({length:NR},()=>Array.from({length:NC},A)));
+const X={macro:Array.from({length:16},()=>Array.from({length:12},()=>({op:0,mod:0,key:0}))),td:Array.from({length:4},()=>({tap:A(),hold:A(),dtap:A()})),combo:Array.from({length:4},()=>({a:255,b:255,out:A()})),note:[0,1,2].map(presetBoard),term:200,board:0,vol:60,bri:207,slp:0,fl:2,air:[60,60,15,2,0,0,0,0],greet:'NUMPAD30',lname:['BASE','FN','L3','L4','L5','L6','L7','L8'],nl:2,seq:Array.from({length:4},()=>Array.from({length:8},A)),ss:0,timer:300,mo:1,ml:1,mc:0,mt:0,mv:100,st:100,sl:0,hs:0};
+let L=0,sel=[1,3],msel=[1,3],mb=0,mi=0,dev=null,waiter=null,chain=Promise.resolve(),timers={},xt=null,recOn=false,view='keymap';
+
+const cleanTxt=t=>String(t).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D').toUpperCase().replace(/[^A-Z0-9 !()*+,\-.\/:=?]/g,'');
+const noteName=hz=>{const n=Math.round(69+12*Math.log2(hz/440));return ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'][((n%12)+12)%12]+(Math.floor(n/12)-1)};
+const toast=(t)=>{const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',3200)};
+const lc=l=>'hsl('+(l*47+250)+' 80% 62%)';
+const lname=l=>X.lname[l]||'L'+(l+1);
+const keyOpts=v=>'<option value="0">(chỉ phím bổ trợ)</option>'+Object.keys(N).map(Number).sort((a,b)=>a-b).map(k=>'<option value="'+k+'"'+(k==v?' selected':'')+'>'+N[k]+'</option>').join('');
+const chips=(mod,attr)=>'<div class="chips">'+MODS.map(x=>'<label><input type="checkbox" data-m="'+x[1]+'" '+attr+(mod&x[1]?' checked':'')+'><span>'+x[0]+'</span></label>').join('')+'</div>';
+function label(a){
+  const t=a.t;if(t==4)return 'Num / FN';if(t==1)return '▽';if(t==5)return 'MUSIC';if(t==6)return 'BOOT';if(t==10)return 'BẢNG';
+  if(t==8)return 'Macro '+(a.code+1);if(t==9)return 'TD '+(a.code+1);if(t==11)return 'AIR';if(t==12)return 'AIR giữ';if(t==13)return MB[a.code]||'Chuột';
+  if(t==17)return 'LT '+lname(a.mod)+' '+(N[a.code]||'');if(t==18)return 'SEQ '+(a.code+1);if(t==19)return 'TIMER';if(t==20)return 'SONG '+(a.code+1);if(t==21)return 'TETRIS';if(t>=14&&t<=16)return ['MO','TG','TO'][t-14]+' '+lname(a.code);if(t==3)return CC[a.code]||'Media';
+  if(t==2){const p=MODS.filter(x=>a.mod&x[1]).map(x=>x[0]);const k=a.code?(N[a.code]||'0x'+a.code.toString(16)):'';return p.concat(k?[k]:[]).join('+')||'—'}
+  return '—';
+}
+const cat=a=>a.t<2?'c-none':a.t==2?'c-key':a.t==3?'c-media':a.t==8||a.t==9||a.t==18?'c-macro':a.t>=11&&a.t<=13?'c-mouse':a.t==19?'c-sys':a.t==20||a.t==21?'c-music':a.t==4||a.t>=14?'c-layer':a.t==5||a.t==10?'c-music':'c-sys';
+
+/* ---- bắt phím ---- */
+function hidOf(code){let r;
+  if(r=code.match(/^Key([A-Z])$/))return 4+r[1].charCodeAt(0)-65;
+  if(r=code.match(/^Digit(\d)$/))return r[1]=='0'?39:29+ +r[1];
+  if(r=code.match(/^F(\d+)$/))return +r[1]<=12?57+ +r[1]:0;
+  if(r=code.match(/^Numpad(\d)$/))return r[1]=='0'?98:88+ +r[1];
+  return ({Enter:40,Escape:41,Backspace:42,Tab:43,Space:44,Minus:45,Equal:46,BracketLeft:47,BracketRight:48,Backslash:49,Semicolon:51,Quote:52,Backquote:53,Comma:54,Period:55,Slash:56,PrintScreen:70,ScrollLock:71,Pause:72,Insert:73,Home:74,PageUp:75,Delete:76,End:77,PageDown:78,ArrowRight:79,ArrowLeft:80,ArrowDown:81,ArrowUp:82,NumLock:83,NumpadDivide:84,NumpadMultiply:85,NumpadSubtract:86,NumpadAdd:87,NumpadEnter:88,NumpadDecimal:99})[code]||0}
+const modOf=e=>(e.ctrlKey?1:0)|(e.shiftKey?2:0)|(e.altKey?4:0)|(e.metaKey?8:0);
+function capture(cb){const h=e=>{e.preventDefault();e.stopPropagation();const c=hidOf(e.code);if(!c)return;window.removeEventListener('keydown',h,true);cb(modOf(e),c)};window.addEventListener('keydown',h,true)}
+
+/* ---- trình sửa hành động ---- */
+function editor(a,onchg,allowed){
+  const w=document.createElement('div');
+  const draw=()=>{
+    const nl=X.nl;
+    let h='<label class="l" style="margin-top:0">Chức năng</label><select data-e="ty">'+TYPES.filter(t=>allowed.includes(t[0])).map(t=>'<option value="'+t[0]+'"'+(t[0]==a.t?' selected':'')+'>'+t[1]+'</option>').join('')+'</select>';
+    if(a.t==2)h+='<label class="l">Phím bổ trợ</label>'+chips(a.mod,'data-e="m" ')+'<label class="l">Phím chính</label><select data-e="kc">'+keyOpts(a.code)+'</select><div style="margin-top:8px"><button class="btn sm" data-e="cap">⌨ Bắt phím từ bàn phím</button></div>';
+    if(a.t==3)h+='<label class="l">Hành động</label><select data-e="cc">'+Object.keys(CC).map(k=>'<option value="'+k+'"'+(k==a.code?' selected':'')+'>'+CC[k]+'</option>').join('')+'</select>';
+    if(a.t==13)h+='<label class="l">Nút</label><select data-e="cc">'+Object.keys(MB).map(k=>'<option value="'+k+'"'+(k==a.code?' selected':'')+'>'+MB[k]+'</option>').join('')+'</select>';
+    if(a.t>=14&&a.t<=16)h+='<label class="l">Layer</label><select data-e="ix">'+Array.from({length:nl},(_,i)=>'<option value="'+i+'"'+(i==a.code?' selected':'')+'>'+(i+1)+' · '+lname(i)+'</option>').join('')+'</select>';
+    if(a.t==17)h+='<label class="l">Giữ để vào layer</label><select data-e="lm">'+Array.from({length:nl},(_,i)=>'<option value="'+i+'"'+(i==a.mod?' selected':'')+'>'+(i+1)+' · '+lname(i)+'</option>').join('')+'</select><label class="l">Chạm = phím</label><select data-e="kc">'+keyOpts(a.code)+'</select>';
+    if(a.t==8||a.t==9||a.t==18||a.t==20){const n=a.t==8?16:4;h+='<label class="l">'+(a.t==8?'Macro':a.t==9?'Tap Dance':a.t==20?'Ô bài MIDI':'Sequence')+' số</label><select data-e="ix">'+Array.from({length:n},(_,i)=>'<option value="'+i+'"'+(i==a.code?' selected':'')+'>'+(i+1)+'</option>').join('')+'</select>'}
+    w.innerHTML=h;const q=s=>w.querySelector('[data-e="'+s+'"]');
+    q('ty').onchange=e=>{a.t=+e.target.value;a.mod=a.t==17?1:0;a.code=a.t==3?0xE2:(a.t==13||(a.t>=14&&a.t<=16))?1:0;if(a.t>=14&&a.t<=16&&a.code>=X.nl)a.code=0;draw();onchg()};
+    w.querySelectorAll('[data-e="m"]').forEach(i=>i.onchange=()=>{a.mod=[...w.querySelectorAll('[data-e="m"]')].reduce((s,x)=>s|(x.checked?+x.dataset.m:0),0);onchg()});
+    ['kc','cc','ix'].forEach(n=>{const s=q(n);if(s)s.onchange=e=>{a.code=+e.target.value;onchg()}});
+    const lm=q('lm');if(lm)lm.onchange=e=>{a.mod=+e.target.value;onchg()};
+    const cp=q('cap');if(cp)cp.onclick=()=>{cp.textContent='Nhấn tổ hợp phím…';capture((mod,code)=>{a.mod=mod;a.code=code;draw();onchg()})};
+  };draw();return w;
+}
+
+/* ---- bàn phím trực quan ---- */
+function board(el,fl,s,on){
+  el.innerHTML='';
+  for(let r=0;r<NR;r++)for(let c=0;c<NC;c++){
+    const k=r+','+c;if(HIDE[k])continue;const x=fl(r,c),b=document.createElement('button');
+    b.className='key '+x[2]+(s[0]==r&&s[1]==c?' sel':'')+(DIS[k]?' dis':'')+(r==0&&c==3?' lock':'');
+    b.dataset.rc=r+','+c;b.style.gridRow=(r+1)+(SPAN[k]=='row'?' / span 2':'');b.style.gridColumn=(c+1)+(SPAN[k]=='col'?' / span 2':'');
+    b.innerHTML=x[0]+'<small>R'+r+' C'+c+'</small>';b.onclick=()=>{if(!DIS[k])on(r,c)};el.appendChild(b);
+  }
+}
+function renderLayers(){
+  $('#layers').innerHTML=Array.from({length:X.nl},(_,l)=>'<button class="chip'+(l==L?' on':'')+'" data-l="'+l+'" style="--c:'+lc(l)+'"><i></i><small>'+(l+1)+'</small>'+lname(l)+'</button>').join('');
+  $('#lcount').textContent=X.nl+' / '+NL+' layer';
+}
+const oledHtml=()=>'<small>NUMPAD30</small><b>'+lname(L)+'</b>';
+function render(){
+  board($('#g1'),(r,c)=>{const a=m[L][r][c];return[label(a),'',cat(a)]},sel,(r,c)=>{sel=[r,c];render();inspect()});
+  $('#oled').innerHTML=oledHtml();$('#oled2').innerHTML='<small>NUMPAD30</small><b>'+(X.greet||'—')+'</b>';
+  const n=m[L].reduce((s,row)=>s+row.filter(a=>a.t>=2).length,0);
+  $('#lstat').textContent=(L+1)+' · '+lname(L);
+  $('#linfo').innerHTML='<dl><dt>Phím đã gán</dt><dd>'+n+' / 30</dd><dt>Cách vào</dt><dd>'+(L==0?'Layer nền (luôn bật)':L==1?'Giữ phím Num':'Dùng MO / TG / TO')+'</dd></dl><div style="margin-top:12px"><button class="btn sm danger" id="clrL">Xóa hết phím layer này</button></div>';
+  $('#clrL').onclick=()=>{if(!confirm('Xóa toàn bộ phím của layer này?'))return;for(let r=0;r<NR;r++){for(let c=0;c<NC;c++)if(!(L==0&&r==0&&c==3))m[L][r][c]=L==0?A():{t:1,mod:0,code:0};rowWrite(L,r)}render();inspect()};
+}
+function inspect(){
+  const [r,c]=sel,p=$('#ins');$('#selPos').textContent='R'+r+' C'+c+' · '+lname(L);
+  if(r==0&&c==3&&L==0){const a=m[0][0][3];p.innerHTML='<p class="hint" style="margin:0 0 8px">Phím Num là cố định: giữ để vào layer bên dưới, bấm nhanh để bật/tắt NumLock.</p><label class="l">Giữ để vào layer</label><select id="nl">'+Array.from({length:X.nl-1},(_,i)=>'<option value="'+(i+1)+'"'+((a.code||1)==i+1?' selected':'')+'>'+(i+2)+' · '+lname(i+1)+'</option>').join('')+'</select>';
+    $('#nl').onchange=e=>{a.code=+e.target.value;rowWrite(0,0)};return}
+  p.innerHTML='';p.appendChild(editor(m[L][r][c],()=>{render();rowWrite(L,r)},L?ALLH:ALLB));
+}
+$('#layers').onclick=e=>{const b=e.target.closest('[data-l]');if(b){L=+b.dataset.l;renderAll()}};
+$('#addL').onclick=()=>{if(X.nl>=NL)return toast('Tối đa '+NL+' layer');X.nl++;L=X.nl-1;renderAll();xWrite()};
+$('#renL').onclick=()=>{const v=prompt('Tên layer (tối đa 7 ký tự A-Z, 0-9)',lname(L));if(v==null)return;X.lname[L]=cleanTxt(v).slice(0,7)||'L'+(L+1);renderAll();xWrite()};
+$('#delL').onclick=()=>{if(L<2)return toast('Không xóa được layer nền và FN');if(L!=X.nl-1)return toast('Chỉ xóa được layer cuối cùng');if(!confirm('Xóa layer '+lname(L)+'?'))return;
+  for(let r=0;r<NR;r++){for(let c=0;c<NC;c++)m[L][r][c]={t:1,mod:0,code:0};rowWrite(L,r)}X.lname[L]='L'+(L+1);X.nl--;L=X.nl-1;renderAll();xWrite()};
+
+/* ---- Macro ---- */
+const mcount=()=>{const n=X.macro[mi].findIndex(s=>!s.op);return n<0?12:n};
+function renderMacro(){
+  const ms=X.macro[mi],n=mcount();
+  $('#mlist').innerHTML=X.macro.map((s,i)=>'<button class="'+(i==mi?'on':'')+'" data-i="'+i+'">M'+(i+1)+(s[0].op?' ●':'')+'</button>').join('');
+  let h='';
+  for(let i=0;i<n;i++){const s=ms[i];
+    h+='<div class="step"><select data-i="'+i+'" data-f="op">'+OPS.map(o=>'<option value="'+o[0]+'"'+(o[0]==s.op?' selected':'')+'>'+o[1]+'</option>').join('')+'</select>';
+    h+=s.op==4?'<input type="number" min="0" max="2550" step="10" value="'+s.key*10+'" data-i="'+i+'" data-f="wait"> ms':chips(s.mod,'data-i="'+i+'" ')+'<select data-i="'+i+'" data-f="key">'+keyOpts(s.key)+'</select>';
+    h+='<button class="btn sm danger" data-del="'+i+'">✕</button></div>';}
+  $('#msteps').innerHTML=h||'<p class="hint">Macro trống. Bấm "Ghi từ bàn phím" hoặc "Thêm bước".</p>';
+}
+$('#mlist').onclick=e=>{const i=e.target.dataset.i;if(i!=null){mi=+i;renderMacro()}};
+$('#msteps').onchange=e=>{const t=e.target,s=X.macro[mi][+t.dataset.i],f=t.dataset.f;
+  if(f=='op'){s.op=+t.value;if(s.op==4){s.key=10;s.mod=0}}else if(f=='key')s.key=+t.value;else if(f=='wait')s.key=Math.min(255,Math.round(t.value/10));
+  else if(t.dataset.m)s.mod=t.checked?s.mod|+t.dataset.m:s.mod&~+t.dataset.m;renderMacro();xWrite()};
+$('#msteps').onclick=e=>{const d=e.target.dataset.del;if(d==null)return;X.macro[mi].splice(+d,1);X.macro[mi].push({op:0,mod:0,key:0});renderMacro();xWrite()};
+$('#madd').onclick=()=>{const n=mcount();if(n>=12)return toast('Tối đa 12 bước');X.macro[mi][n]={op:1,mod:0,key:4};renderMacro();xWrite()};
+$('#mclr').onclick=()=>{X.macro[mi]=Array.from({length:12},()=>({op:0,mod:0,key:0}));renderMacro();xWrite()};
+const recKey=e=>{const c=hidOf(e.code);if(!c)return;e.preventDefault();const n=mcount();if(n>=12)return;X.macro[mi][n]={op:1,mod:modOf(e),key:c};renderMacro()};
+$('#mrec').onclick=()=>{recOn=!recOn;$('#mrec').className='btn'+(recOn?' rec':'');$('#mrec').textContent=recOn?'■ Dừng ghi':'● Ghi từ bàn phím';
+  if(recOn)window.addEventListener('keydown',recKey,true);else{window.removeEventListener('keydown',recKey,true);xWrite()}};
+
+/* ---- Nâng cao ---- */
+function renderAdv(){
+  $('#term').value=X.term;const el=$('#tds');el.innerHTML='';
+  X.td.forEach((t,i)=>{const d=document.createElement('div');d.style.marginBottom='14px';d.innerHTML='<h2 style="font-size:13px;margin:0 0 8px">Tap Dance '+(i+1)+'</h2><div class="three"></div>';
+    [['tap','Chạm 1 lần'],['hold','Giữ'],['dtap','Chạm 2 lần']].forEach(([k,n])=>{const c=document.createElement('div');c.innerHTML='<label class="l" style="margin-top:0">'+n+'</label>';c.appendChild(editor(t[k],xWrite,SIMPLE));d.lastChild.appendChild(c)});el.appendChild(d)});
+  const posOpts=v=>'<option value="255">(chưa chọn)</option>'+(()=>{let h='';for(let r=0;r<NR;r++)for(let c=0;c<NC;c++){if(HIDE[r+','+c]||DIS[r+','+c])continue;const k=r*NC+c;h+='<option value="'+k+'"'+(k==v?' selected':'')+'>R'+r+' C'+c+' · '+label(m[0][r][c])+'</option>'}return h})();
+  const cm=$('#cmb');cm.innerHTML='';
+  X.combo.forEach((c,i)=>{const d=document.createElement('div');d.style.marginBottom='14px';
+    d.innerHTML='<h2 style="font-size:13px;margin:0 0 8px">Combo '+(i+1)+'</h2><div class="two"><div><label class="l" style="margin-top:0">Phím A</label><select data-s="a">'+posOpts(c.a)+'</select></div><div><label class="l" style="margin-top:0">Phím B</label><select data-s="b">'+posOpts(c.b)+'</select></div></div><label class="l">Kết quả khi bấm đồng thời</label>';
+    d.appendChild(editor(c.out,xWrite,SIMPLE));d.querySelectorAll('[data-s]').forEach(s=>s.onchange=()=>{c[s.dataset.s]=+s.value;xWrite()});cm.appendChild(d)});
+  const sq=$('#seqs');sq.innerHTML='';
+  X.seq.forEach((st,i)=>{let n=st.findIndex(a=>!a.t);if(n<0)n=8;const d=document.createElement('div');d.style.marginBottom='16px';d.innerHTML='<h2 style="font-size:13px;margin:0 0 8px">Sequence '+(i+1)+' · '+n+' bước</h2><div class="three"></div>';
+    for(let k=0;k<Math.min(n+1,8);k++){const c=document.createElement('div');c.innerHTML='<label class="l" style="margin-top:0">Bước '+(k+1)+'</label>';c.appendChild(editor(st[k],()=>{xWrite();renderAdv()},SIMPLE));d.lastChild.appendChild(c)}sq.appendChild(d)});
+}
+$('#term').onchange=e=>{X.term=Math.max(80,Math.min(600,+e.target.value||200));xWrite()};
+
+/* ---- Nhạc cụ ---- */
+let ac;const A_=()=>ac=ac||new AudioContext();
+function tone(type,f0,f1,d,g){A_();const o=ac.createOscillator(),v=ac.createGain(),t=ac.currentTime;o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+d);v.gain.setValueAtTime(g,t);v.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(v);v.connect(ac.destination);o.start(t);o.stop(t+d)}
+function noise(d,ft,f,g){A_();const n=ac.sampleRate*d|0,bf=ac.createBuffer(1,n,ac.sampleRate),x=bf.getChannelData(0);for(let i=0;i<n;i++)x[i]=Math.random()*2-1;const s=ac.createBufferSource(),fl=ac.createBiquadFilter(),v=ac.createGain(),t=ac.currentTime;s.buffer=bf;fl.type=ft;fl.frequency.value=f;v.gain.setValueAtTime(g,t);v.gain.exponentialRampToValueAtTime(.001,t+d);s.connect(fl);fl.connect(v);v.connect(ac.destination);s.start(t)}
+function pluck(hz){A_();const sr=22050,D=sr/hz+.5;let L=Math.floor(D),d=D-L;if(d<.5){L--;d+=1}if(L<8){L=8;d=1}if(L>478){L=478;d=1}
+  const w0=2*Math.PI*hz/sr,C=Math.sin((1-d)*w0/2)/Math.sin((1+d)*w0/2),T=Math.min(6.5,Math.max(3.5,8-.009*hz)),g=Math.exp(-6.9/(T*hz)),n=sr*4|0,bf=ac.createBuffer(1,n,sr),x=bf.getChannelData(0),l=new Float32Array(L),tm=new Float32Array(L);
+  let e=0;for(let k=0;k<L;k++){e+=.55*(Math.random()*2-1-e);tm[k]=e}
+  const pp=Math.max(1,Math.floor(L*.17));for(let k=0;k<L;k++)l[k]=.9*(tm[k]-tm[(k+pp)%L]);
+  let pos=0,s1=0,s2=0,pk=.12;
+  for(let t=0;t<n;t++){const i=pos,j=(pos+1)%L;x[t]=l[i]+pk*(Math.random()*2-1);pk*=.985;const f=.5*(l[i]+l[j]),ap=C*(f-s2)+s1;s1=f;s2=ap;l[i]=g*ap;pos=j}
+  const s=ac.createBufferSource();s.buffer=bf;const out=ac.createGain();out.gain.value=.6;out.connect(ac.destination);s.connect(out);
+  [[100,4,.7],[215,5,.5],[520,3,.25]].forEach(([fr,q,gn])=>{const b=ac.createBiquadFilter(),gg=ac.createGain();b.type='bandpass';b.frequency.value=fr;b.Q.value=q;gg.gain.value=gn;s.connect(b);b.connect(gg);gg.connect(out)});s.start()}
+function drum(id){switch(id){case 1:tone('sine',150,40,.18,.9);break;case 2:noise(.18,'bandpass',1800,.6);tone('triangle',200,120,.1,.4);break;case 3:noise(.06,'highpass',7000,.4);break;case 4:noise(.35,'highpass',7000,.35);break;case 5:tone('sine',260,140,.25,.7);break;case 6:tone('sine',190,100,.3,.7);break;case 7:tone('sine',130,60,.35,.8);break;case 8:noise(1,'highpass',4500,.5);break;case 9:noise(.6,'highpass',6000,.3);tone('square',3200,3000,.4,.05);break;case 10:noise(.04,'bandpass',1400,.6);setTimeout(()=>noise(.12,'bandpass',1400,.6),25);break;case 11:tone('square',900,800,.04,.25);break;case 12:tone('square',560,555,.25,.12);tone('square',845,840,.25,.12)}}
+function play(b,v){if(!v)return;if(b==1)drum(v);else if(b==2)pluck(v);else tone('square',v,v*.995,.35,.08)}
+function renderMusic(){
+  $('#bseg').innerHTML=BN.map((n,i)=>'<button class="'+(i==mb?'on':'')+'" data-b="'+i+'">'+n+(X.board==i?' ✓':'')+'</button>').join('');
+  board($('#g2'),(r,c)=>{const v=X.note[mb][r*NC+c];return[mb==1?(v?DRUMS[v]:'—'):(v?noteName(v)+'<small>'+v+' Hz</small>':'—'),'',v?'c-music':'c-none']},msel,(r,c)=>{msel=[r,c];play(mb,X.note[mb][r*NC+c]);renderMusic()});
+  const k=msel[0]*NC+msel[1],n=X.note[mb][k];let o;
+  if(mb==1)o=DRUMS.map((d,i)=>'<option value="'+i+'"'+(i==n?' selected':'')+'>'+d+'</option>').join('');
+  else{o='<option value="0">(không phát)</option>';for(let mid=36;mid<=96;mid++){const hz=midiHz(mid);o+='<option value="'+hz+'"'+(hz==n?' selected':'')+'>'+noteName(hz)+' · '+hz+' Hz</option>'}}
+  $('#mins').innerHTML='<h2 style="font-size:13px;margin:0">'+BN[mb]+' · R'+msel[0]+' C'+msel[1]+'</h2><label class="l">'+(mb==1?'Tiếng trống':'Nốt')+'</label><select id="ns">'+o+'</select>'+(mb==1?'':'<label class="l">Hoặc nhập tần số (Hz)</label><input type="number" id="nh" min="0" max="5000" value="'+n+'">')+'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button class="btn sm" id="nb">▶ Nghe thử</button><button class="btn sm primary" id="bu">'+(X.board==mb?'✓ Đang dùng':'Dùng bảng này')+'</button><button class="btn sm" id="br">Về mẫu gốc</button></div>';
+  const set=v=>{X.note[mb][k]=Math.max(0,Math.min(mb==1?12:5000,Math.round(v)||0));renderMusic();xWrite()};
+  $('#ns').onchange=e=>{set(+e.target.value);play(mb,X.note[mb][k])};if($('#nh'))$('#nh').onchange=e=>set(+e.target.value);
+  $('#nb').onclick=()=>play(mb,X.note[mb][k]);$('#bu').onclick=()=>{X.board=mb;renderMusic();xWrite()};$('#br').onclick=()=>{X.note[mb]=presetBoard(mb);renderMusic();xWrite()};
+}
+$('#bseg').onclick=e=>{const b=e.target.dataset.b;if(b!=null){mb=+b;renderMusic()}};
+
+/* ---- Màn hình, chuột bay ---- */
+function renderSet(){$('#vol').value=X.vol;$('#vv').textContent=X.vol+'%';$('#bri').value=X.bri;$('#slp').value=X.slp;$('#flp').checked=!!(X.fl&1);$('#spl').checked=!!(X.fl&2);$('#grt').value=X.greet;$('#gon').checked=!!(X.fl&4);$('#ssk').value=X.ss;$('#tmr').value=Math.max(1,Math.round(X.timer/60));$('#mo').checked=!!X.mo;$('#ml').checked=!!X.ml;$('#mc').value=X.mc;$('#mt').value=X.mt;$('#mv').value=X.mv;$('#mvv').textContent=X.mv}
+['vol','bri'].forEach(i=>$('#'+i).oninput=e=>{X[i]=+e.target.value;$('#vv').textContent=X.vol+'%';xWrite()});
+$('#slp').onchange=e=>{X.slp=+e.target.value;xWrite()};
+$('#mc').innerHTML=Array.from({length:16},(_,i)=>'<option value="'+i+'">'+(i+1)+(i==9?' (trống GM)':'')+'</option>').join('');
+$('#mo').onchange=e=>{X.mo=e.target.checked?1:0;xWrite()};$('#ml').onchange=e=>{X.ml=e.target.checked?1:0;xWrite()};
+$('#mc').onchange=e=>{X.mc=+e.target.value;xWrite()};$('#mt').onchange=e=>{X.mt=Math.max(-36,Math.min(36,Math.round(+e.target.value||0)));e.target.value=X.mt;xWrite()};
+$('#mv').oninput=e=>{X.mv=+e.target.value;$('#mvv').textContent=X.mv;xWrite()};
+$('#ssk').onchange=e=>{X.ss=+e.target.value;xWrite()};
+$('#tmr').onchange=e=>{X.timer=Math.max(1,Math.min(999,+e.target.value||5))*60;e.target.value=X.timer/60;xWrite()};
+const setFl=()=>{X.fl=(X.fl&8)|($('#flp').checked?1:0)|($('#spl').checked?2:0)|($('#gon').checked?4:0);xWrite()};
+['flp','spl','gon'].forEach(i=>$('#'+i).onchange=setFl);
+$('#grt').onchange=e=>{X.greet=cleanTxt(e.target.value).slice(0,23);e.target.value=X.greet;$('#oled2').innerHTML='<small>NUMPAD30</small><b>'+(X.greet||'—')+'</b>';xWrite()};
+function renderAir(){const a=X.air;[['ax',0],['ay',1],['ad',2],['as',3]].forEach(([id,i])=>{$('#'+id).value=a[i];$('#'+id+'v').textContent=id=='ad'?(a[i]/10).toFixed(1)+' °/s':a[i]});[['af0',1],['af1',2],['af2',4],['af3',8]].forEach(([id,b])=>$('#'+id).checked=!!(a[4]&b))}
+[['ax',0],['ay',1],['ad',2],['as',3]].forEach(([id,i])=>$('#'+id).oninput=e=>{X.air[i]=+e.target.value;renderAir();xWrite()});
+[['af0',1],['af1',2],['af2',4],['af3',8]].forEach(([id,b])=>$('#'+id).onchange=e=>{X.air[4]=e.target.checked?X.air[4]|b:X.air[4]&~b;xWrite()});
+
+/* ---- Lịch sử hoàn tác ---- */
+let hist=[],hi=-1,ht=null;
+const snap=()=>JSON.stringify({m,X});
+function resetHist(){hist=[snap()];hi=0;upUndo()}
+function touch(){clearTimeout(ht);ht=setTimeout(()=>{const s=snap();if(hist[hi]===s)return;hist=hist.slice(0,hi+1);hist.push(s);if(hist.length>60)hist.shift();hi=hist.length-1;upUndo()},350)}
+function upUndo(){$('#undo').disabled=hi<=0;$('#redo').disabled=hi>=hist.length-1}
+function restore(s){const o=JSON.parse(s);o.m.forEach((ly,i)=>ly.forEach((rw,j)=>rw.forEach((c,k)=>Object.assign(m[i][j][k],c))));Object.assign(X,o.X)}
+function step(d){clearTimeout(ht);const n=hi+d;if(n<0||n>=hist.length)return;hi=n;restore(hist[hi]);renderAll();writeAll();upUndo()}
+$('#undo').onclick=()=>step(-1);$('#redo').onclick=()=>step(1);
+
+/* ---- WebHID ---- */
+function setSave(s){const e=$('#sv');e.hidden=s=='idle';e.className='pill '+s;e.textContent=s=='pend'?'ĐANG LƯU…':'ĐÃ LƯU'}
+function setConn(on,t){if(!on&&typeof renderSlots=='function'){slotInfo=[null,null,null,null];renderSlots()}$('#connCard').classList.toggle('on',on);$('#connTitle').textContent=on?t:'Chưa kết nối';$('#connSub').textContent=on?'Áp dụng ngay · tự lưu flash':'Sửa offline vẫn được';$('#d1').textContent=on?t:'Chưa kết nối';$('#saveBtn').disabled=!on}
+function onRep(e){const d=new Uint8Array(e.data.buffer);if(d[0]==0x82){if(songDone){const f=songDone;songDone=null;f()}return}if(d[0]==0x81){const el=document.querySelector('#g1 [data-rc="'+d[1]+','+d[2]+'"]');if(el)el.classList.toggle('hit',!!d[3]);if(d[3]&&pr.run)pkey(d[1]*7+d[2]);return}if(d[0]==0x80){setSave('ok');return}if(waiter&&waiter.c==d[0]){const w=waiter;waiter=null;w.res(d)}}
+function req(bytes){
+  const run=()=>new Promise((res,rej)=>{const buf=new Uint8Array(32);buf.set(bytes);waiter={c:bytes[0],res};
+    dev.sendReport(0,buf).catch(rej);setTimeout(()=>{if(waiter&&waiter.res===res){waiter=null;rej(new Error('Thiết bị không phản hồi'))}},1500)});
+  return chain=chain.then(run,run);
+}
+const rowBytes=(l,r)=>{const b=[2,l,r];m[l][r].forEach(a=>b.push(a.t,a.mod,a.code&255,a.code>>8));return b};
+function rowWrite(l,r){touch();if(!dev)return;clearTimeout(timers[l+','+r]);setSave('pend');timers[l+','+r]=setTimeout(()=>req(rowBytes(l,r)).catch(x=>toast(x.message)),120)}
+function packX(){const b=new Uint8Array(XS);let o=0;const pa=a=>{b[o++]=a.t;b[o++]=a.mod;b[o++]=a.code&255;b[o++]=a.code>>8};
+  X.macro.forEach(ms=>ms.forEach(s=>{b[o++]=s.op;b[o++]=s.mod;b[o++]=s.key}));
+  X.td.forEach(t=>{pa(t.tap);pa(t.hold);pa(t.dtap)});X.combo.forEach(c=>{b[o++]=c.a;b[o++]=c.b;pa(c.out)});
+  X.note.forEach(bd=>bd.forEach(n=>{b[o++]=n&255;b[o++]=n>>8}));b[o++]=X.term&255;b[o++]=X.term>>8;b[o++]=X.board;b[o++]=X.vol;b[o++]=X.bri;b[o++]=X.slp;b[o++]=X.fl;
+  X.air.forEach(v=>b[o++]=v);for(let i=0;i<24;i++)b[o++]=i<23?(X.greet.charCodeAt(i)||0):0;
+  X.lname.forEach(n=>{for(let i=0;i<8;i++)b[o++]=i<7?(n.charCodeAt(i)||0):0});b[o++]=X.nl;X.seq.forEach(sq=>sq.forEach(pa));b[o++]=X.ss;b[o++]=X.timer&255;b[o++]=X.timer>>8;b[o++]=X.mo;b[o++]=X.ml;b[o++]=X.mc;b[o++]=X.mt&255;b[o++]=X.mv;b[o++]=X.st;b[o++]=X.sl;b[o++]=X.hs&255;b[o++]=(X.hs>>>8)&255;b[o++]=(X.hs>>>16)&255;b[o++]=(X.hs>>>24)&255;return b}
+function unpackX(b){let o=0;const ra=()=>{const a={t:b[o],mod:b[o+1],code:b[o+2]|b[o+3]<<8};o+=4;return a};
+  X.macro.forEach(ms=>ms.forEach(s=>{s.op=b[o++];s.mod=b[o++];s.key=b[o++]}));
+  X.td.forEach(t=>{t.tap=ra();t.hold=ra();t.dtap=ra()});X.combo.forEach(c=>{c.a=b[o++];c.b=b[o++];c.out=ra()});
+  for(let bd=0;bd<3;bd++)for(let i=0;i<35;i++){X.note[bd][i]=b[o]|b[o+1]<<8;o+=2}X.term=(b[o]|b[o+1]<<8)||200;o+=2;
+  X.board=b[o++]%3;X.vol=b[o++];X.bri=b[o++];X.slp=b[o++];X.fl=b[o++];X.air=Array.from(b.slice(o,o+8));o+=8;
+  let g='';for(let i=0;i<23&&b[o+i];i++)g+=String.fromCharCode(b[o+i]);X.greet=g;o+=24;
+  for(let l=0;l<NL;l++){let t='';for(let i=0;i<7&&b[o+i];i++)t+=String.fromCharCode(b[o+i]);X.lname[l]=t||'L'+(l+1);o+=8}X.nl=Math.min(NL,Math.max(2,b[o++]));X.seq.forEach(sq=>{for(let i=0;i<8;i++)sq[i]=ra()});X.ss=b[o++]%3;X.timer=(b[o]|b[o+1]<<8)||300;o+=2;X.mo=b[o++];X.ml=b[o++];X.mc=b[o++]&15;X.mt=(b[o++]<<24)>>24;X.mv=b[o++]||100;X.st=b[o++]||100;X.sl=b[o++];X.hs=(b[o]|b[o+1]<<8|b[o+2]<<16|b[o+3]<<24)>>>0;if(X.hs==0xFFFFFFFF)X.hs=0}
+function xWrite(){touch();if(!dev)return;clearTimeout(xt);setSave('pend');xt=setTimeout(async()=>{try{const b=packX();
+  for(let off=0;off<XS;off+=28){const n=Math.min(28,XS-off);await req([5,off>>8,off&255,n,...b.slice(off,off+n)])}}catch(x){toast(x.message)}},300)}
+function writeAll(){if(!dev)return;for(let l=0;l<NL;l++)for(let r=0;r<NR;r++)rowWrite(l,r);xWrite()}
+function renderAll(){if(L>=X.nl)L=X.nl-1;renderLayers();render();inspect();renderMacro();renderAdv();renderMusic();renderSet();renderAir();renderPractice();renderSlots();renderGame()}
+async function loadAll(){
+  for(let l=0;l<NL;l++)for(let r=0;r<NR;r++){const d=await req([1,l,r]);
+    for(let c=0;c<NC;c++){const o=3+c*4;m[l][r][c]={t:d[o],mod:d[o+1],code:d[o+2]|d[o+3]<<8}}}
+  const b=new Uint8Array(XS);
+  for(let off=0;off<XS;off+=28){const d=await req([4,off>>8,off&255]);b.set(d.slice(3,3+Math.min(28,XS-off)),off)}
+  unpackX(b);renderAll();resetHist();
+}
+let test=false;
+$('#testBtn').onclick=async()=>{test=!test;$('#testBtn').textContent='Chế độ thử: '+(test?'bật':'tắt');$('#testBtn').classList.toggle('primary',test);if(dev){try{await req([7,test?1:0])}catch(e){toast(e.message)}}else if(test)toast('Kết nối bàn phím để thử phím')};
+async function open(d){
+  if(!d.opened)await d.open();dev=d;d.oninputreport=onRep;setConn(true,d.productName||'Numpad30');
+  try{await loadAll();if(test)await req([7,1]);await loadSlots();toast('Đã đọc cấu hình từ bàn phím')}catch(e){toast('Không đọc được cấu hình: '+e.message)}
+}
+$('#bc').onclick=async()=>{try{const [d]=await navigator.hid.requestDevice({filters:[{vendorId:0xCAFE,productId:0x4030}]});if(d)await open(d)}catch(e){toast(e.message)}};
+$('#dc').onclick=async()=>{try{await dev.close()}catch{}dev=null;setConn(false)};
+if(!navigator.hid)$('#nohid').style.display='block';
+else{navigator.hid.getDevices().then(ds=>{const d=ds.find(x=>x.vendorId==0xCAFE&&x.productId==0x4030);if(d)open(d)});
+  navigator.hid.addEventListener('disconnect',()=>{dev=null;setConn(false)})}
+$('#saveBtn').onclick=async()=>{if(!dev)return;setSave('pend');try{await req([6])}catch(e){toast(e.message)}};
+
+/* ---- hồ sơ, điều hướng, giao diện ---- */
+$('#ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({v:3,m,X})],{type:'application/json'}));a.download='numpad30-config.json';a.click()};
+$('#im').onclick=()=>$('#fi').click();
+$('#fi').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text());const src=j.m||j.km;if(!src)throw 0;
+  src.forEach((ly,l)=>ly.forEach((rw,r)=>rw.forEach((s,c)=>Object.assign(m[l][r][c],{t:s.t|0,mod:s.mod|0,code:s.code|0}))));
+  const y=j.X||j.x;if(y){const z=JSON.parse(JSON.stringify(y));['macro','td','combo','term','board','vol','bri','slp','fl','air','greet','lname','nl','seq','ss','timer','mo','ml','mc','mt','mv','st','sl'].forEach(k=>{if(z[k]!==undefined)X[k]=z[k]});if(z.note&&Array.isArray(z.note[0]))X.note=z.note}
+  renderAll();writeAll();touch();toast('Đã nhập hồ sơ')}catch{toast('File JSON không hợp lệ')}e.target.value=''};
+$('#rs').onclick=async()=>{if(!dev)return toast('Hãy kết nối bàn phím trước');if(!confirm('Khôi phục cấu hình mặc định?'))return;setSave('pend');await req([3]);await loadAll()};
+const VIEWS={keymap:['Bàn phím','Gán phím và layer','M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M10 13h4'],macro:['Macro','16 macro × 12 bước','M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM10 8l6 4-6 4z'],music:['Nhạc cụ','Piano · Trống · Guitar','M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM21 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'],practice:['Tập nhạc','Học theo bài hát và file MIDI','M3 12h3l3-9 4 18 3-9h5'],game:['Trò chơi','Tetris trên OLED','M6 11h4M8 9v4M15 12h.01M18 10h.01M17.3 5H6.7a4 4 0 0 0-3.9 3.1l-1.6 7A3 3 0 0 0 4 19a3 3 0 0 0 2.4-1.2L8 16h8l1.6 1.8A3 3 0 0 0 20 19a3 3 0 0 0 2.8-3.9l-1.6-7A4 4 0 0 0 17.3 5z'],adv:['Nâng cao','Tap Dance và Combo','M4 6h9M18 6h2M4 12h2M11 12h9M4 18h9M18 18h2'],screen:['Màn hình','OLED, lời chào, logo','M4 5h16a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 17H4a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 4 5zM8 21h8M12 17v4'],air:['Chuột bay','Gyro MPU-6515','M8 2.5h8a1 1 0 0 1 1 1v14a5 5 0 0 1-10 0v-14a1 1 0 0 1 1-1zM12 2.5v6M7 8.5h10'],tools:['Công cụ','Sao lưu và thiết bị','M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-2.5z'],help:['Trợ giúp','Hướng dẫn sử dụng','M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z']};
+$('#nav').innerHTML=Object.entries(VIEWS).map(([k,v])=>'<button data-v="'+k+'" class="'+(k==view?'on':'')+'" title="'+v[0]+'"><svg viewBox="0 0 24 24"><path d="'+v[2]+'"/></svg><span>'+v[0]+'</span></button>').join('');
+function showView(v){if(v!='practice'&&pr.run)pstop();view=v;$$('.view').forEach(x=>x.classList.toggle('on',x.id=='view-'+v));$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v==v));$('#vt').textContent=VIEWS[v][0];$('#vs').textContent=VIEWS[v][1]}
+$('#nav').onclick=e=>{const b=e.target.closest('[data-v]');if(b)showView(b.dataset.v)};
+const th=localStorage;try{if(th.getItem('n30theme'))document.documentElement.dataset.theme=th.getItem('n30theme')}catch{}
+$('#theme').onclick=()=>{const t=document.documentElement.dataset.theme=='dark'?'light':'dark';document.documentElement.dataset.theme=t;try{th.setItem('n30theme',t)}catch{}};
+window.addEventListener('keydown',e=>{if(/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))return;if(!(e.ctrlKey||e.metaKey))return;const k=e.key.toLowerCase();
+  if(k=='z'){e.preventDefault();step(-1)}else if(k=='y'){e.preventDefault();step(1)}else if(k=='s'){e.preventDefault();$('#saveBtn').click()}});
+/* ---- Tập nhạc ---- */
+const NSEMI={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+function S(str,bpm=100){let t=0;const ev=[];str.trim().split(/\s+/).forEach(w=>{const [n,d]=w.split(':'),b=+d,sp=60/bpm;if(n!='R'){const q=n.match(/^([A-G])(#?)(\d)$/);ev.push({t:t*sp,d:b*sp*.9,p:12*(+q[3]+1)+NSEMI[q[1]]+(q[2]?1:0)})}t+=b});return ev}
+const SONGS={
+ 'Twinkle Twinkle Little Star':S('C4:1 C4:1 G4:1 G4:1 A4:1 A4:1 G4:2 F4:1 F4:1 E4:1 E4:1 D4:1 D4:1 C4:2 G4:1 G4:1 F4:1 F4:1 E4:1 E4:1 D4:2 G4:1 G4:1 F4:1 F4:1 E4:1 E4:1 D4:2 C4:1 C4:1 G4:1 G4:1 A4:1 A4:1 G4:2 F4:1 F4:1 E4:1 E4:1 D4:1 D4:1 C4:2',100),
+ 'Ode to Joy (Beethoven)':S('E4:1 E4:1 F4:1 G4:1 G4:1 F4:1 E4:1 D4:1 C4:1 C4:1 D4:1 E4:1 E4:1.5 D4:.5 D4:2 E4:1 E4:1 F4:1 G4:1 G4:1 F4:1 E4:1 D4:1 C4:1 C4:1 D4:1 E4:1 D4:1.5 C4:.5 C4:2',108),
+ 'Mary Had a Little Lamb':S('E4:1 D4:1 C4:1 D4:1 E4:1 E4:1 E4:2 D4:1 D4:1 D4:2 E4:1 G4:1 G4:2 E4:1 D4:1 C4:1 D4:1 E4:1 E4:1 E4:1 E4:1 D4:1 D4:1 E4:1 D4:1 C4:4',110),
+ 'Jingle Bells':S('E4:1 E4:1 E4:2 E4:1 E4:1 E4:2 E4:1 G4:1 C4:1.5 D4:.5 E4:4 F4:1 F4:1 F4:1.5 F4:.5 F4:1 E4:1 E4:1 E4:.5 E4:.5 E4:1 D4:1 D4:1 E4:1 D4:2 G4:2',120)};
+const pr={ev:[],groups:[],pitches:[],pmap:{},kp:{},gi:0,T:0,run:false,mode:0,tempo:1,raf:0,last:0,hit:0,miss:0,end:0,tracks:[],sig:''};
+function parseMidi(buf){
+  const v=new DataView(buf);let p=0;const u32=()=>{const x=v.getUint32(p);p+=4;return x},u16=()=>{const x=v.getUint16(p);p+=2;return x};
+  if(u32()!=0x4D546864)throw new Error('Không phải file MIDI');const hl=u32();u16();const nt=u16(),div=u16();p=8+hl;
+  if(div&0x8000)throw new Error('MIDI dùng SMPTE, chưa hỗ trợ');
+  const tempos=[],tracks=[];
+  for(let k=0;k<nt&&p<buf.byteLength;k++){
+    if(u32()!=0x4D54726B)break;const len=u32(),end=p+len;let tick=0,run=0,name='';const on={},notes=[];
+    while(p<end){
+      let d=0,b;do{b=v.getUint8(p++);d=(d<<7)|(b&127)}while(b&128);tick+=d;
+      let st=v.getUint8(p);if(st&128){p++;if(st<0xF0)run=st}else st=run;
+      if(st==0xFF){const ty=v.getUint8(p++);let l=0,c;do{c=v.getUint8(p++);l=(l<<7)|(c&127)}while(c&128);
+        if(ty==0x51)tempos.push([tick,(v.getUint8(p)<<16)|(v.getUint8(p+1)<<8)|v.getUint8(p+2)]);
+        if(ty==3)name=String.fromCharCode(...new Uint8Array(buf,p,l));p+=l}
+      else if(st==0xF0||st==0xF7){let l=0,c;do{c=v.getUint8(p++);l=(l<<7)|(c&127)}while(c&128);p+=l}
+      else{const hi=st&0xF0,ch=st&15,a=v.getUint8(p++),bb=(hi==0xC0||hi==0xD0)?0:v.getUint8(p++);
+        if(ch!=9){if(hi==0x90&&bb>0)on[ch*128+a]=tick;else if(hi==0x80||(hi==0x90&&bb==0)){const q=ch*128+a;if(on[q]!==undefined){notes.push({a:on[q],b:tick,p:a});delete on[q]}}}}
+    }
+    p=end;tracks.push({name,notes});
+  }
+  tempos.sort((x,y)=>x[0]-y[0]);if(!tempos.length||tempos[0][0]>0)tempos.unshift([0,500000]);
+  const sec=t=>{let s=0,lt=0,us=tempos[0][1];for(const [tt,u] of tempos){if(tt>t)break;s+=(tt-lt)*us/1e6/div;lt=tt;us=u}return s+(t-lt)*us/1e6/div};
+  return tracks.filter(t=>t.notes.length).map(t=>({name:t.name||'Track',ev:t.notes.map(n=>({t:sec(n.a),d:Math.max(.08,sec(n.b)-sec(n.a)),p:n.p})).sort((x,y)=>x.t-y.t)}));
+}
+function prepSong(ev){
+  pstop();pr.ev=[];pr.groups=[];pr.pitches=[];pr.pmap={};pr.kp={};
+  if(ev.length){
+    const ps=ev.map(e=>e.p).sort((a,b)=>a-b),lo=ps[ps.length>>1]-14;
+    pr.ev=ev.map(e=>{let p=e.p;while(p<lo)p+=12;while(p>lo+28)p-=12;return{...e,p,p0:e.p}});
+    pr.pitches=[...new Set(pr.ev.map(e=>e.p))].sort((a,b)=>a-b);
+    const keys=[];for(let r=0;r<NR;r++)for(let c=0;c<NC;c++){if(HIDE[r+','+c]||DIS[r+','+c]||(r==0&&c==3))continue;keys.push(r*NC+c)}
+    pr.pitches.forEach((p,i)=>{pr.pmap[p]=keys[i];pr.kp[keys[i]]=p});
+    pr.ev.forEach(e=>e.i=pr.pitches.indexOf(e.p));
+    pr.ev.forEach(e=>{const g=pr.groups[pr.groups.length-1];if(g&&e.t-g.t<.03)g.ev.push(e);else pr.groups.push({t:e.t,ev:[e]})});
+    pr.groups.forEach(g=>{g.need=new Set(g.ev.map(e=>pr.pmap[e.p]));g.got=new Set();g.done=false});
+    pr.end=Math.max(...pr.ev.map(e=>e.t+e.d));
+  }
+  pr.gi=0;pr.T=-2;pr.hit=pr.miss=0;renderPractice();
+}
+function renderPractice(){
+  board($('#g3'),(r,c)=>{const p=pr.kp[r*NC+c];return[p?noteName(midiHz(p)):'—','',p?'c-music':'c-none']},[-1,-1],(r,c)=>{const k=r*NC+c,p=pr.kp[k];if(p)pnote(p,.4);pkey(k)});
+  $('#pinfo').textContent=pr.ev.length?pr.ev.length+' nốt · '+pr.pitches.length+' nốt khác nhau · '+pr.end.toFixed(0)+' giây':'Chưa chọn bài';
+  pr.sig='';pscore();pdraw();
+}
+function pnote(p,d){tone('triangle',midiHz(p),midiHz(p)*.998,Math.min(1.2,d+.15),.2)}
+function flash(keys,cls){[...keys].forEach(k=>{const el=document.querySelector('#g3 [data-rc="'+((k/NC)|0)+','+(k%NC)+'"]');if(el){el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),180)}})}
+function pscore(){const t=pr.hit+pr.miss;$('#pscore').textContent=pr.mode==0?'':'Đúng '+pr.hit+' · Sai/lỡ '+pr.miss+(t?' · '+Math.round(100*pr.hit/t)+'%':'')}
+function pdraw(){
+  const c=$('#pcv'),x=c.getContext&&c.getContext('2d');if(!x)return;
+  const W=c.width,H=c.height,n=Math.max(1,pr.pitches.length),lw=W/n,hy=H*.86,pps=hy/3;
+  x.fillStyle='#02060a';x.fillRect(0,0,W,H);x.strokeStyle='rgba(255,255,255,.06)';
+  for(let i=1;i<n;i++){x.beginPath();x.moveTo(i*lw,0);x.lineTo(i*lw,H);x.stroke()}
+  x.fillStyle='rgba(124,92,255,.9)';x.fillRect(0,hy,W,2);
+  pr.ev.forEach(e=>{const y1=hy-(e.t-pr.T)*pps,y0=y1-Math.max(8,e.d*pps);if(y1<0||y0>hy+4)return;x.fillStyle='hsl('+(e.i*360/n)+' 80% 60%)';x.fillRect(e.i*lw+2,y0,lw-4,Math.min(y1,hy)-y0)});
+  x.fillStyle='#7f8aa0';x.font='11px monospace';x.textAlign='center';pr.pitches.forEach((p,i)=>x.fillText(noteName(midiHz(p)),i*lw+lw/2,H-6));
+  const g=pr.groups[pr.gi],show=g&&(pr.mode==1||g.t-pr.T<.6)&&pr.run,sig=show?[...g.need].join(','):'';
+  if(sig!==pr.sig){pr.sig=sig;$$('#g3 .key').forEach(b=>{const q=b.dataset.rc.split(',');b.classList.toggle('tgt',!!show&&g.need.has(+q[0]*NC+ +q[1]))})}
+}
+function ptick(now){
+  if(!pr.run)return;const dt=Math.min(.1,(now-pr.last)/1000)*pr.tempo;pr.last=now;let g;
+  if(pr.mode==0){pr.T+=dt;while((g=pr.groups[pr.gi])&&pr.T>=g.t){g.ev.forEach(e=>pnote(e.p,e.d/pr.tempo));flash(g.need,'ok');pr.gi++}}
+  else if(pr.mode==1){g=pr.groups[pr.gi];pr.T=g?Math.min(pr.T+dt,g.t):pr.T+dt}
+  else{pr.T+=dt;while((g=pr.groups[pr.gi])&&pr.T>g.t+.3){pr.miss++;pr.gi++;flash(g.need,'bad')}pscore()}
+  if(pr.gi>=pr.groups.length&&pr.T>pr.end+.5){pstop();toast('Hoàn thành bài');return}
+  pdraw();pr.raf=requestAnimationFrame(ptick);
+}
+function pkey(k){
+  if(!pr.run||pr.mode==0)return;const g=pr.groups[pr.gi];if(!g)return;
+  const okTime=pr.mode==1||Math.abs(pr.T-g.t)<=.3;
+  if(okTime&&g.need.has(k)){g.got.add(k);flash([k],'ok');if(g.got.size>=g.need.size){pr.hit++;pr.gi++}}
+  else{pr.miss++;flash([k],'bad')}
+  pscore();
+}
+function pstop(){pr.run=false;cancelAnimationFrame(pr.raf);const b=$('#pgo');if(b)b.textContent='▶ Bắt đầu';pr.sig='';pdraw()}
+$('#pgo').onclick=()=>{
+  if(pr.run){pstop();return}
+  if(!pr.ev.length)return toast('Hãy chọn bài trước');
+  pr.T=-2;pr.gi=0;pr.hit=pr.miss=0;pr.groups.forEach(g=>{g.got.clear();g.done=false});
+  if(pr.mode>0&&dev&&!test)$('#testBtn').click();
+  pr.run=true;pr.last=performance.now();$('#pgo').textContent='■ Dừng';pscore();pr.raf=requestAnimationFrame(ptick);
+};
+$('#psong').innerHTML=Object.keys(SONGS).map(k=>'<option>'+k+'</option>').join('');
+$('#psong').onchange=e=>{pr.name=e.target.value;$('#ptrk').style.display='none';prepSong(SONGS[e.target.value])};
+$('#pmid').onclick=()=>$('#pfile').click();
+$('#pfile').onchange=async e=>{const fl=e.target.files[0];if(!fl)return;try{pr.tracks=parseMidi(await fl.arrayBuffer());if(!pr.tracks.length)throw new Error('File không có nốt nhạc');
+  $('#ptsel').innerHTML=pr.tracks.map((t,i)=>'<option value="'+i+'">'+t.name+' ('+t.ev.length+' nốt)</option>').join('');
+  const best=pr.tracks.reduce((b,t,i)=>t.ev.length>pr.tracks[b].ev.length?i:b,0);$('#ptsel').value=best;$('#ptrk').style.display=pr.tracks.length>1?'':'none';
+  pr.name=fl.name.replace(/\.[^.]+$/,'');prepSong(pr.tracks[best].ev);toast('Đã mở '+fl.name)}catch(x){toast(x.message||'Không đọc được file MIDI')}e.target.value=''};
+$('#ptsel').onchange=e=>prepSong(pr.tracks[+e.target.value].ev);
+$('#ptempo').oninput=e=>{pr.tempo=e.target.value/100;$('#ptv').textContent=e.target.value+'%'};
+$('#pmode').onclick=e=>{const m=e.target.dataset.m;if(m==null)return;pr.mode=+m;$$('#pmode button').forEach(b=>b.classList.toggle('on',b.dataset.m==m));pscore()};
+$('#pset').onclick=()=>{if(!pr.pitches.length)return toast('Hãy chọn bài trước');const nb=Array(35).fill(0);pr.pitches.forEach(p=>nb[pr.pmap[p]]=midiHz(p));X.note[0]=nb;X.board=0;renderMusic();xWrite();toast('Đã gán '+pr.pitches.length+' nốt vào bảng Piano. Giữ Num + Enter để vào lớp nhạc cụ.')};
+pr.name='Twinkle Twinkle Little Star';
+let slotInfo=[null,null,null,null],songDone=null;
+const waitSong=()=>new Promise(res=>{songDone=res;setTimeout(()=>{if(songDone===res){songDone=null;res()}},5000)});
+function encodeSong(ev0,name){
+  const ev=[...ev0].sort((a,b)=>a.t-b.t).slice(0,1018),nm=cleanTxt(name||'SONG').slice(0,17);
+  const b=[0x53,0x4F,0x4E,0x47,ev.length&255,ev.length>>8];for(let i=0;i<18;i++)b.push(i<nm.length?nm.charCodeAt(i):0);
+  let prev=0;const t0=ev.length?ev[0].t:0;
+  ev.forEach(e=>{const t=Math.round((e.t-t0)*1000),dt=Math.min(65535,Math.max(0,t-prev));prev=t;const p=Math.max(0,Math.min(127,e.p0??e.p)),du=Math.max(1,Math.min(255,Math.round(e.d*50)));b.push(dt&255,dt>>8,p,du)});
+  return {bytes:b,count:ev.length,name:nm};
+}
+async function loadSlots(){
+  if(!dev){slotInfo=[null,null,null,null];renderSlots();return}
+  for(let i=0;i<4;i++){try{const d=await req([10,i]);slotInfo[i]=d[2]?{n:(d[3]<<8)|d[4],name:String.fromCharCode(...[...d.slice(5,23)].filter(c=>c))}:null}catch{}}
+  renderSlots();
+}
+function renderSlots(){
+  $('#slots').innerHTML=slotInfo.map((s,i)=>'<div class="step"><b>Ô '+(i+1)+'</b><span style="flex:1;color:var(--muted)">'+(s?s.name+' · '+s.n+' nốt':'(trống)')+'</span><button class="btn sm primary" data-up="'+i+'">Tải bài hiện tại vào ô</button><button class="btn sm" data-pl="'+i+'"'+(s?'':' disabled')+'>▶ Phát</button><button class="btn sm danger" data-dl="'+i+'"'+(s?'':' disabled')+'>Xóa</button></div>').join('')+'<div style="margin-bottom:6px"><button class="btn sm" data-stop="1">■ Dừng phát</button></div>';
+  $('#stp').value=X.st;$('#stv').textContent=X.st;$('#sloop').checked=!!X.sl;
+}
+async function uploadSong(slot){
+  if(!pr.ev.length)return toast('Hãy chọn bài ở trên trước');
+  const sg=encodeSong(pr.ev,pr.name);toast('Đang tải '+sg.count+' nốt vào ô '+(slot+1)+'…');
+  for(let off=0;off<sg.bytes.length;off+=27){const n=Math.min(27,sg.bytes.length-off);await req([8,slot,off>>8,off&255,n,...sg.bytes.slice(off,off+n)])}
+  const w=waitSong();await req([9,slot]);await w;await loadSlots();toast('Đã lưu "'+sg.name+'" vào ô '+(slot+1));
+}
+$('#slots').onclick=async e=>{const t=e.target.closest('button');if(!t)return;if(!dev)return toast('Hãy kết nối bàn phím trước');
+  try{if(t.dataset.up!=null)await uploadSong(+t.dataset.up);else if(t.dataset.pl!=null)await req([11,1,+t.dataset.pl]);
+    else if(t.dataset.dl!=null){if(!confirm('Xóa bài trong ô này?'))return;const w=waitSong();await req([11,2,+t.dataset.dl]);await w;await loadSlots()}
+    else if(t.dataset.stop!=null)await req([11,0,0])}catch(x){toast(x.message)}};
+$('#stp').oninput=e=>{X.st=+e.target.value;$('#stv').textContent=X.st;xWrite()};
+$('#sloop').onchange=e=>{X.sl=e.target.checked?1:0;xWrite()};
+prepSong(SONGS['Twinkle Twinkle Little Star']);
+
+const GK={28:['◀ Trái','c-key'],17:['◀ Trái','c-key'],30:['▶ Phải','c-key'],19:['▶ Phải','c-key'],29:['▼ Xuống','c-key'],18:['▼ Xuống','c-key'],22:['⟳ Xoay','c-layer'],11:['⟳ Xoay','c-layer'],12:['⟳ Xoay','c-layer'],10:['⟲ Xoay ngược','c-layer'],7:['⟲ Xoay ngược','c-layer'],31:['⤓ Thả nhanh','c-sys'],27:['⤓ Thả nhanh','c-sys'],33:['Giữ khối','c-macro'],14:['Giữ khối','c-macro'],26:['Tạm dừng','c-media']};
+function renderGame(){board($('#g4'),(r,c)=>{const q=GK[r*NC+c];return[q?q[0]:(r==0&&c==3?'Num (FN)':'—'),'',q?q[1]:'c-none']},[-1,-1],()=>{});$('#hsv').textContent='Điểm cao: '+X.hs;$('#gmusic').checked=!(X.fl&8)}
+$('#gmusic').onchange=e=>{X.fl=e.target.checked?X.fl&~8:X.fl|8;xWrite()};
+$('#gassign').onclick=()=>{m[1][0][0]={t:21,mod:0,code:0};if(L==1)render();rowWrite(1,0);toast('Đã gán: giữ Num rồi bấm phím Ctrl+C (R0C0) để chơi Tetris')};
+$('#hsrst').onclick=async()=>{if(!confirm('Xóa điểm cao?'))return;X.hs=0;if(dev){try{await req([12])}catch(e){toast(e.message)}}renderGame()};
+const REV={};Object.entries(N).forEach(([k,v])=>REV[v.replace(' ','_')]=+k);
+const SPEC={'@mute':[3,0,0xE2],'@vd':[3,0,0xEA],'@vu':[3,0,0xE9],'@pp':[3,0,0xCD],'@nx':[3,0,0xB5],'@pv':[3,0,0xB6],NUM:[4,0,1],GAME:[21,0,0],MUSIC:[5,0,0],BOARD:[10,0,0],BOOT:[6,0,0],AIR:[11,0,0],LMB:[13,0,1],RMB:[13,0,2],'~':[0,0,0],v:[1,0,0]};
+function P(s){if(SPEC[s]){const q=SPEC[s];return{t:q[0],mod:q[1],code:q[2]}}const q=s.match(/^((?:[CSAW]\+)*)(.+)$/);let mod=0;q[1].split('+').forEach(x=>{if(x)mod|={C:1,S:2,A:4,W:8}[x]});return{t:2,mod,code:REV[q[2]]||0}}
+function loadDefaults(){
+  const B=['C+C C+V C+X NUM KP_/ KP_* KP_-','C+Z C+Y C+A KP_7 KP_8 KP_9 KP_+','C+S A+Tab W+D KP_4 KP_5 KP_6 ~','~ Esc ~ End Ins Del KP_Enter','← ↓ → KP_0 ~ KP_. ~'],F=['GAME v v v @mute @vd @vu','v v v F1 F2 F3 @pp','v v v F4 F5 F6 v','v BOARD v Home PgUp PgDn MUSIC','@pv LMB RMB AIR v BOOT v'];
+  [B,F].forEach((rows,l)=>rows.forEach((row,r)=>row.split(' ').forEach((s,c)=>m[l][r][c]=P(s))));
+  for(let l=2;l<NL;l++)for(let r=0;r<NR;r++)for(let c=0;c<NC;c++)m[l][r][c]={t:1,mod:0,code:0};
+}
+loadDefaults();setConn(false);showView('keymap');renderAll();resetHist();
+</script>
+</body>
+</html>
