@@ -33,6 +33,7 @@ target_link_libraries(numpad30
     hardware_i2c
     hardware_flash
     pico_flash
+    pico_unique_id
     hardware_pio
     hardware_dma
     tinyusb_device
