@@ -15,6 +15,7 @@
 #include "midi.h"
 #include "player.h"
 #include "game.h"
+#include "pet.h"
 
 // ---- Chân theo HARDWARE.md ----
 #define ROW0        0      // R0..R4 = GP0..GP4 (ra)
@@ -55,6 +56,7 @@ static action_t resolve(int r, int c) {
         action_t a = km[l][r][c];
         if (a.type != ACT_TRANS) return a;
     }
+    if (pet_active()) return (action_t){ ACT_PKEY, 0, (uint16_t)(r * NCOL + c) };
     if (game_active()) return (action_t){ ACT_GKEY, 0, (uint16_t)(r * NCOL + c) };
     if (music_on) return (action_t){ ACT_NOTE, 0, (uint16_t)(r * NCOL + c) };
     action_t a = km[0][r][c];
@@ -185,7 +187,9 @@ static void press(int r, int c) {
     case ACT_MBTN:     held[r][c] = a; mouse_dirty = true; break;
     case ACT_LT:       held[r][c] = a; lt_ph[r][c] = 1; lt_t[r][c] = now_ms(); break;
     case ACT_SONG:     if (player_active()) player_stop(); else player_start((uint8_t)a.code); ui_dirty = true; break;
-    case ACT_GAME:     if (game_active()) game_stop(); else { music_on = false; game_start(); } ui_dirty = true; break;
+    case ACT_GAME:     if (game_active()) game_stop(); else { if (pet_active()) pet_stop(); music_on = false; game_start(); } ui_dirty = true; break;
+    case ACT_PET:      if (pet_active()) pet_stop(); else { if (game_active()) game_stop(); music_on = false; pet_start(); } ui_dirty = true; break;
+    case ACT_PKEY:     held[r][c] = a; pet_key((uint8_t)a.code, true); break;
     case ACT_GKEY:     held[r][c] = a; game_key((uint8_t)a.code, true); break;
     case ACT_SEQ: {
         int i = a.code % NSEQ, n = 0;
@@ -227,6 +231,7 @@ static void release(int r, int c) {
         lt_ph[r][c] = 0;
     }
     else if (a.type == ACT_GKEY) game_key((uint8_t)a.code, false);
+    else if (a.type == ACT_PKEY) pet_key((uint8_t)a.code, false);
     held[r][c] = NOACT;
 }
 
@@ -238,6 +243,8 @@ static void on_key(int r, int c, bool down) {
     if (oled_asleep) { oled_power(true); oled_asleep = false; }
     cfg_key_event(r, c, down);
     if (ss_active) { ss_active = false; ui_dirty = true; }
+    if (pet_showing() && !pet_active()) { pet_ambient(false); ui_dirty = true; }
+    if (down && !pet_active()) pet_typed();
     if (down && alarm_on) { alarm_on = false; music_note(200, false); ui_dirty = true; return; }
     if (down) {
         if (pend >= 0) {
@@ -250,7 +257,7 @@ static void on_key(int r, int c, bool down) {
             }
             flush_pend();
         }
-        if (top_layer() == 0 && !music_on && !game_active() && combo_uses(k)) { pend = k; pend_t = now_ms(); return; }
+        if (top_layer() == 0 && !music_on && !game_active() && !pet_active() && combo_uses(k)) { pend = k; pend_t = now_ms(); return; }
         press(r, c);
     } else {
         if (pend == k) flush_pend();
@@ -385,6 +392,7 @@ int main(void) {
     apply_oled();
     if (ex.flags & 2) splash();
     audio_init();
+    pet_init();
     air_init();
     tusb_init();
 
@@ -403,6 +411,10 @@ int main(void) {
         midi_task();
         player_task(nm);
         game_task(nm);
+        pet_ambient(pet_ambient_allowed() && !pet_active() && !game_active() && !ss_active && !oled_asleep && !greet_active
+                    && !alarm_on && !timer_run && !player_active() && (nm - act_ms) >= PET_IDLE_MS);
+        pet_task(nm);
+        { static bool ps_prev; if (pet_showing() != ps_prev) { ps_prev = pet_showing(); ui_dirty = true; } }
         { static bool pl_prev; if (player_active() != pl_prev) { pl_prev = player_active(); ui_dirty = true; } }
         { static bool gm_prev; if (game_active() != gm_prev) { gm_prev = game_active(); ui_dirty = true; } }
         if (pulse_on && nm >= pulse_until) { pulse_on = false; pulse = NOACT; kb_dirty = cons_dirty = true; }
@@ -439,12 +451,12 @@ int main(void) {
             else if (mouse_dirty || pend_dx || pend_dy) send_mouse();
         }
 
-        if (ui_dirty && !greet_active && !ss_active && !game_active()) { draw_ui(); ui_dirty = false; }
+        if (ui_dirty && !greet_active && !ss_active && !game_active() && !pet_showing()) { draw_ui(); ui_dirty = false; }
         oled_service();
         cfg_task();
         audio_task();
         if (cfg_take_changed()) apply_oled();
-        if (ex.sleep_min && !oled_asleep && !ss_active && !game_active() && now_ms() - act_ms > ex.sleep_min * 60000u) {
+        if (ex.sleep_min && !oled_asleep && !ss_active && !game_active() && !pet_active() && now_ms() - act_ms > ex.sleep_min * 60000u) {
             if (ex.ss_kind == 0) { oled_power(false); oled_asleep = true; } else { ss_active = true; ss_init(); }
         }
         if (ss_active && !oled_busy()) ss_frame();

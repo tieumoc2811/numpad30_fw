@@ -20,6 +20,7 @@ add_executable(numpad30
     midi.c
     player.c
     game.c
+    pet.c
     usb_descriptors.c
 )
 

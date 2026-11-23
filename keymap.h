@@ -36,6 +36,8 @@ typedef enum {
     ACT_SONG,       // phát/dừng bài MIDI lưu trong ô code
     ACT_GAME,       // bật/tắt Tetris
     ACT_GKEY,       // (nội bộ) phím điều khiển game, code = hàng*7+cột
+    ACT_PET,        // bật/tắt Tamagotchi (chế độ tương tác)
+    ACT_PKEY,       // (nội bộ) phím điều khiển thú cưng, code = hàng*7+cột
 } act_type_t;
 
 typedef struct {
@@ -54,6 +56,7 @@ typedef struct {
 #define BOOTKEY     { ACT_BOOT, 0, 0 }
 #define BOARDKEY    { ACT_BOARD, 0, 0 }
 #define GAMEKEY     { ACT_GAME, 0, 0 }
+#define PETKEY      { ACT_PET, 0, 0 }
 #define AIRKEY      { ACT_AIR, 0, 0 }
 #define AIRHOLD     { ACT_AIRH, 0, 0 }
 #define MB(b)       { ACT_MBTN, 0, (b) }
@@ -87,7 +90,7 @@ static const action_t keymap_base[NROW][NCOL] = {
 
 // Lớp FN (giữ Num). ___ = dùng lại phím lớp nền.
 static const action_t keymap_fn[NROW][NCOL] = {
-    { GAMEKEY, ___, ___, ___, CONS(CC_MUTE), CONS(CC_VOL_DOWN), CONS(CC_VOL_UP) },
+    { GAMEKEY, PETKEY, ___, ___, CONS(CC_MUTE), CONS(CC_VOL_DOWN), CONS(CC_VOL_UP) },
     { ___, ___, ___, KC(HID_KEY_F1), KC(HID_KEY_F2), KC(HID_KEY_F3), CONS(CC_PLAY_PAUSE) },
     { ___, ___, ___, KC(HID_KEY_F4), KC(HID_KEY_F5), KC(HID_KEY_F6), ___ },
     { ___, BOARDKEY, ___, KC(HID_KEY_HOME), KC(HID_KEY_PAGE_UP), KC(HID_KEY_PAGE_DOWN), MUSICKEY },
