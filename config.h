@@ -26,7 +26,7 @@ typedef struct __attribute__((packed)) {
     uint8_t  volume;                 // 861  0..100
     uint8_t  bright;                 // 862  độ sáng OLED 0..255
     uint8_t  sleep_min;              // 863  tự tắt màn hình sau n phút (0 = không)
-    uint8_t  flags;                  // 864  bit0 xoay 180°, bit1 logo khởi động, bit2 lời chào
+    uint8_t  flags;                  // 864  bit0 xoay 180°, bit1 logo khởi động, bit2 lời chào, bit3 TẮT tiếng gõ phím (mặc định bật)
     uint8_t  air[8];                 // 865  chuột bay (xem air.c)
     char     greet[24];              // 873  lời chào chạy chữ (kết thúc bằng 0)
     char     lname[NLAYER][8];       // 897  tên layer (tối đa 7 ký tự)

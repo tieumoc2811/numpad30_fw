@@ -29,7 +29,7 @@ typedef struct {
 } voice_t;
 
 typedef struct { float f0, f1, pd, td, nd, tg, ng; uint8_t sq, hp; } dp_t;
-static const dp_t DP[13] = {
+static const dp_t DP[14] = {
     {0},
     {150, 45, .03f, .25f, 0,    .9f, 0,    0, 0},   // 1 kick
     {200, 150, .02f, .10f, .15f, .4f, .5f, 0, 0},   // 2 snare
@@ -43,6 +43,7 @@ static const dp_t DP[13] = {
     {0, 0, 0, 0, .12f, 0, .6f, 0, 0},               // 10 clap
     {900, 800, .01f, .04f, 0, .3f, 0, 1, 0},        // 11 rim
     {560, 560, .01f, .25f, 0, .15f, 0, 1, 0},       // 12 cowbell
+    {2400, 1300, .004f, .022f, .014f, .55f, .55f, 0, 1},  // 13 tiếng gõ phím (tách ngắn)
 };
 
 static voice_t vox[NV];
@@ -72,7 +73,7 @@ static void voice_start(uint8_t idx, uint16_t val, uint8_t board) {
     v->key = idx; v->held = true;
     switch (board) {
     case 1: {
-        if (val > 12) return;
+        if (val > 13) return;
         const dp_t *p = &DP[val];
         v->kind = 3; v->f1 = p->f1; v->fp = p->f0 - p->f1; v->fpd = dec(p->pd);
         v->env = 1; v->edec = dec(p->td); v->nenv = 1; v->ndec = dec(p->nd);
@@ -234,6 +235,8 @@ void audio_task(void) {
         wr = (wr + 1) & (RING - 1);
     }
 }
+
+void audio_click(void) { voice_start(201, 13, 1); }   // tiếng "tách" khi gõ phím
 
 void audio_tone(uint16_t hz) {
     voice_t *v = &vox[alloc_voice()];

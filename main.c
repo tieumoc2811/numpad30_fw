@@ -167,6 +167,7 @@ static void press(int r, int c) {
     lt_hold_all();
     if (num_down && !(r == NUM_R && c == NUM_C)) num_used = true;
     action_t a = resolve(r, c);
+    if (!(ex.flags & 8) && (a.type == ACT_KEY || a.type == ACT_CONSUMER || a.type == ACT_MACRO)) audio_click();
     switch (a.type) {
     case ACT_KEY:      held[r][c] = a; kb_dirty = true;   break;
     case ACT_CONSUMER: held[r][c] = a; cons_dirty = true; break;
